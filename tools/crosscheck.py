@@ -8,6 +8,7 @@ Python standard library, so that anyone can recompute a result from the same dra
     python3 tools/crosscheck.py password                  < draws.txt
     python3 tools/crosscheck.py passphrase --wordlist de  < draws.txt
     python3 tools/crosscheck.py verify                    (checks vectors/ and the word-list hashes)
+    python3 tools/crosscheck.py cli path/to/lottabits     (compares the compiled CLI with this implementation)
 
 It never generates random numbers and never writes files.
 """
@@ -18,6 +19,7 @@ import json
 import math
 import pathlib
 import re
+import subprocess
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -146,13 +148,55 @@ def verify():
     return 1 if failures else 0
 
 
+def run_cli(binary, arguments, draws):
+    text = " ".join(f"{d:02d}" for d in draws)
+    completed = subprocess.run([binary, *arguments], input=text, capture_output=True, text=True, check=False)
+    if completed.returncode != 0:
+        raise SystemExit(f"{binary} {' '.join(arguments)} failed: {completed.stderr}")
+    return completed.stdout
+
+
+def compare_cli(binary):
+    """Feed every vector's draws to the compiled CLI and compare its output with this implementation."""
+    failures = []
+    vectors = json.loads((ROOT / "vectors/vectors.json").read_text(encoding="utf-8"))
+    row = re.compile(r"^\d\d\s+(?:\d\d \d\d)?\s+(\d{4})\s+(\S+)$", re.MULTILINE)
+    for vector in vectors["seed"]:
+        output = run_cli(binary, ["seed", "--details"], vector["draws"])
+        expected = seed(vector["draws"])
+        rows = row.findall(output)
+        actual = {
+            "numbers": [int(number) for number, _ in rows],
+            "mnemonic": " ".join(word for _, word in rows),
+            "entropy": re.search(r"^Entropy: ([0-9a-f]{64})$", output, re.MULTILINE).group(1),
+        }
+        check(f"cli seed {vector['name']}", actual, {key: expected[key] for key in actual}, failures)
+    for vector in vectors["password"]:
+        output = run_cli(binary, ["password"], vector["draws"])
+        expected = password(vector["draws"])
+        actual = re.search(r"^Password:\s+(\S+)\nClasses:\s+([DULS]+)", output, re.MULTILINE).groups()
+        check(f"cli password {vector['name']}", actual, (expected["password"], expected["classes"]), failures)
+    for vector in vectors["passphrase"]:
+        output = run_cli(binary, ["passphrase", "--wordlist", vector["wordlist"]], vector["draws"])
+        expected = passphrase(vector["draws"], vector["wordlist"])
+        actual = re.search(r"^Passphrase:\s+(.+)$", output, re.MULTILINE).group(1)
+        check(f"cli passphrase {vector['name']}", actual, expected["passphrase"], failures)
+    print(f"\n{len(failures)} failure(s)")
+    return 1 if failures else 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("mode", choices=["seed", "password", "passphrase", "verify"])
+    parser.add_argument("mode", choices=["seed", "password", "passphrase", "verify", "cli"])
+    parser.add_argument("binary", nargs="?", help="path of the compiled lottabits binary (mode cli)")
     parser.add_argument("--wordlist", choices=["en", "de"], help="passphrase word list (required for passphrase)")
     args = parser.parse_args()
     if args.mode == "verify":
         return verify()
+    if args.mode == "cli":
+        if args.binary is None:
+            parser.error("cli needs the path of the compiled binary")
+        return compare_cli(args.binary)
     if args.mode == "passphrase" and args.wordlist is None:
         parser.error("passphrase needs --wordlist en|de")
     highest = 64 if args.mode == "seed" else 88

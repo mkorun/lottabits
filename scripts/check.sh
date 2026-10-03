@@ -34,4 +34,19 @@ if ! crosscheck=$(python3 tools/crosscheck.py verify 2>&1); then
 fi
 printf '%s\n' "$crosscheck" | tail -n 1
 
+step "compiled binary: selftest and end-to-end comparison with tools/crosscheck.py"
+build=$(mktemp -d "${TMPDIR:-/tmp}/lottabits-check.XXXXXX")
+trap 'rm -rf -- "$build"' EXIT INT TERM
+go build -trimpath -o "$build/lottabits" ./cmd/lottabits
+if ! selftest=$("$build/lottabits" selftest 2>&1); then
+  printf '%s\n' "$selftest" >&2
+  exit 1
+fi
+printf '%s\n' "$selftest" | tail -n 1
+if ! e2e=$(python3 tools/crosscheck.py cli "$build/lottabits" 2>&1); then
+  printf '%s\n' "$e2e" >&2
+  exit 1
+fi
+printf '%s\n' "$e2e" | tail -n 1
+
 printf '\ncheck: all gates passed\n'
