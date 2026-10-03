@@ -1,5 +1,5 @@
 // Package wordlists embeds the word lists defined in SPEC.md section 7.
-// It is data for the tokenware command, not a stable API.
+// It is data for the lottabits command, not a stable API.
 package wordlists
 
 import (
@@ -14,18 +14,18 @@ import (
 const (
 	BIP39EnglishID     = "bip39-english"
 	bip39EnglishSHA256 = "2f5eed53a4727b4bf8880d8f3f199efc90e58503646d9ff8eff3a2ed3b24dbda"
-	English7744ID      = "tokenware-en-7744-v1"
+	English7744ID      = "lottabits-en-7744-v1"
 	english7744SHA256  = "5c4caefc140efbf20d30e481123fb4beadb1324c12c315971f2bfe600ddafcdb"
-	German7744ID       = "tokenware-de-7744-v1"
+	German7744ID       = "lottabits-de-7744-v1"
 	german7744SHA256   = "8023bf123831341641b1e33a26abdfb4b1739a5e01b3fbad62f35e77704ea156"
 )
 
 var (
 	//go:embed bip39-english.txt
 	bip39EnglishFile string
-	//go:embed tokenware-en-7744-v1.txt
+	//go:embed lottabits-en-7744-v1.txt
 	english7744File string
-	//go:embed tokenware-de-7744-v1.txt
+	//go:embed lottabits-de-7744-v1.txt
 	german7744File string
 )
 

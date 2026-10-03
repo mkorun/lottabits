@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independent second implementation of the Tokenware algorithms (SPEC.md sections 4 to 6).
+"""Independent second implementation of the LottaBits algorithms (SPEC.md sections 4 to 6).
 
 Written separately from the Go code and in a different style (bit strings instead of bit arithmetic), using only the
 Python standard library, so that anyone can recompute a result from the same draws.
@@ -24,8 +24,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 WORDLISTS = {
     "bip39": ("wordlists/bip39-english.txt", "2f5eed53a4727b4bf8880d8f3f199efc90e58503646d9ff8eff3a2ed3b24dbda"),
-    "en": ("wordlists/tokenware-en-7744-v1.txt", "5c4caefc140efbf20d30e481123fb4beadb1324c12c315971f2bfe600ddafcdb"),
-    "de": ("wordlists/tokenware-de-7744-v1.txt", "8023bf123831341641b1e33a26abdfb4b1739a5e01b3fbad62f35e77704ea156"),
+    "en": ("wordlists/lottabits-en-7744-v1.txt", "5c4caefc140efbf20d30e481123fb4beadb1324c12c315971f2bfe600ddafcdb"),
+    "de": ("wordlists/lottabits-de-7744-v1.txt", "8023bf123831341641b1e33a26abdfb4b1739a5e01b3fbad62f35e77704ea156"),
 }
 
 # SPEC.md 5.1, written out by class rather than derived from the excluded characters.

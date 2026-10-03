@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkorun/tokenware/internal/draws"
-	"github.com/mkorun/tokenware/vectors"
-	"github.com/mkorun/tokenware/wordlists"
+	"github.com/mkorun/lottabits/internal/draws"
+	"github.com/mkorun/lottabits/vectors"
+	"github.com/mkorun/lottabits/wordlists"
 )
 
 const wordCount = 2048
@@ -85,7 +85,7 @@ func TestMnemonicMatchesOfficialVectors(t *testing.T) {
 	}
 }
 
-func TestFromDrawsMatchesTokenwareVectors(t *testing.T) {
+func TestFromDrawsMatchesLottaBitsVectors(t *testing.T) {
 	set, err := vectors.Load()
 	if err != nil {
 		t.Fatal(err)
@@ -144,7 +144,7 @@ func TestFromDrawsInternalConsistency(t *testing.T) {
 // for extra bits b lies in block b. Checked for 4096 entropies derived deterministically from SHA-256.
 func TestLastWordBlockProperty(t *testing.T) {
 	for n := range 4096 {
-		base := sha256.Sum256(fmt.Appendf(nil, "tokenware-last-word-%d", n))
+		base := sha256.Sum256(fmt.Appendf(nil, "lottabits-last-word-%d", n))
 		var blocks []int
 		for b := range Blocks {
 			entropy := base

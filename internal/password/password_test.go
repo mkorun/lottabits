@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkorun/tokenware/internal/draws"
-	"github.com/mkorun/tokenware/vectors"
+	"github.com/mkorun/lottabits/internal/draws"
+	"github.com/mkorun/lottabits/vectors"
 )
 
 func TestAlphabetIsFrozen(t *testing.T) {

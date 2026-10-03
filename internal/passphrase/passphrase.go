@@ -1,4 +1,4 @@
-// Package passphrase implements tokenware-passphrase-7744-v1 (SPEC.md section 6): two draws select one word.
+// Package passphrase implements lottabits-passphrase-7744-v1 (SPEC.md section 6): two draws select one word.
 package passphrase
 
 import (
@@ -6,13 +6,13 @@ import (
 	"math"
 	"slices"
 
-	"github.com/mkorun/tokenware/internal/draws"
-	"github.com/mkorun/tokenware/wordlists"
+	"github.com/mkorun/lottabits/internal/draws"
+	"github.com/mkorun/lottabits/wordlists"
 )
 
-// Parameters of tokenware-passphrase-7744-v1.
+// Parameters of lottabits-passphrase-7744-v1.
 const (
-	ID      = "tokenware-passphrase-7744-v1"
+	ID      = "lottabits-passphrase-7744-v1"
 	Tokens  = 88
 	Entries = Tokens * Tokens
 	// RecommendedMinimum is the recommended minimum number of words (SPEC.md 6.2).

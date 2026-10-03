@@ -1,3 +1,3 @@
-module github.com/mkorun/tokenware
+module github.com/mkorun/lottabits
 
 go 1.26

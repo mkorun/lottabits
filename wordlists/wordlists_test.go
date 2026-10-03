@@ -94,14 +94,14 @@ func TestEnglishIsDerivedFromPinnedEFFList(t *testing.T) {
 		words = append(words, word)
 	}
 	if joinList(words) != english7744.file {
-		t.Error("tokenware-en-7744-v1 differs from the first 7744 EFF words")
+		t.Error("lottabits-en-7744-v1 differs from the first 7744 EFF words")
 	}
 }
 
 func TestGermanIsDerivedFromPinnedDys2pList(t *testing.T) {
 	lines := readUpstream(t, dys2pUpstreamFile, dys2pUpstreamSHA256)
 	if joinList(lines[:derivedEntries]) != german7744.file {
-		t.Error("tokenware-de-7744-v1 differs from the first 7744 dys2p lines")
+		t.Error("lottabits-de-7744-v1 differs from the first 7744 dys2p lines")
 	}
 }
 
@@ -109,7 +109,7 @@ func TestCharacterSets(t *testing.T) {
 	lower := regexp.MustCompile(`^[a-z]+$`)
 	for _, w := range german7744.words {
 		if !lower.MatchString(w) {
-			t.Errorf("tokenware-de-7744-v1: %q is not a-z only", w)
+			t.Errorf("lottabits-de-7744-v1: %q is not a-z only", w)
 		}
 	}
 	var hyphenated []string
@@ -119,7 +119,7 @@ func TestCharacterSets(t *testing.T) {
 		}
 	}
 	if want := []string{"drop-down", "felt-tip", "t-shirt"}; !slices.Equal(hyphenated, want) {
-		t.Errorf("tokenware-en-7744-v1: entries outside a-z %q, want %q", hyphenated, want)
+		t.Errorf("lottabits-en-7744-v1: entries outside a-z %q, want %q", hyphenated, want)
 	}
 }
 

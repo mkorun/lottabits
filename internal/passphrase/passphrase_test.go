@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkorun/tokenware/internal/draws"
-	"github.com/mkorun/tokenware/vectors"
-	"github.com/mkorun/tokenware/wordlists"
+	"github.com/mkorun/lottabits/internal/draws"
+	"github.com/mkorun/lottabits/vectors"
+	"github.com/mkorun/lottabits/wordlists"
 )
 
 // SPEC.md 6.1: the 7744 coordinates map one-to-one onto the indexes 0..7743.

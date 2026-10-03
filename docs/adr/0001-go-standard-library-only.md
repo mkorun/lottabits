@@ -5,7 +5,7 @@ Status: accepted, 2026-10-03.
 ## Context
 The prototype computed the last BIP39 word with Bash scripts that depended on `bc`, `xxd`, `sha256sum` and Bash substring
 syntax, behaved differently on GNU, BSD and BusyBox, and drew three entropy bits from `/dev/urandom`.
-Tokenware needs one small, auditable implementation that runs offline on Windows, Linux, macOS and ARM boards.
+LottaBits needs one small, auditable implementation that runs offline on Windows, Linux, macOS and ARM boards.
 
 ## Decision
 - The reference implementation is a Go command-line program, built as one static binary per platform.

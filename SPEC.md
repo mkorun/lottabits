@@ -1,9 +1,9 @@
-# Tokenware specification
+# LottaBits specification
 
 Status: draft for v1. This document is normative. The CLI, the printables and the tests implement exactly these rules.
 The key words MUST, MUST NOT, SHOULD and MAY are used as described in RFC 2119.
 
-Tokenware is not a new cryptographic primitive. It is a human interface to physical randomness: numbered tokens drawn from
+LottaBits is not a new cryptographic primitive. It is a human interface to physical randomness: numbered tokens drawn from
 one bag create secrets; software only calculates where mathematics requires it.
 
 ## 1. Versioned identifiers
@@ -13,11 +13,11 @@ identifier; an existing identifier never changes its meaning. Release versions (
 
 | Identifier | Section |
 |---|---|
-| `tokenware-seed-v1` | 4 |
-| `tokenware-password-88-v1` | 5 |
-| `tokenware-passphrase-7744-v1` | 6 |
+| `lottabits-seed-v1` | 4 |
+| `lottabits-password-88-v1` | 5 |
+| `lottabits-passphrase-7744-v1` | 6 |
 | `bip39-english` | 7 |
-| `tokenware-en-7744-v1`, `tokenware-de-7744-v1` | 7 |
+| `lottabits-en-7744-v1`, `lottabits-de-7744-v1` | 7 |
 
 ## 2. Terms
 
@@ -42,10 +42,10 @@ This procedure applies to all modes. Printables and documentation MUST describe 
    **with replacement**.
 5. Draw unobserved: no cameras, no onlookers, no recording devices in view.
 
-Under these conditions every draw is independent and uniformly distributed over the set. Tokenware makes no claim beyond that;
+Under these conditions every draw is independent and uniformly distributed over the set. LottaBits makes no claim beyond that;
 it does not claim that tokens are more random than fair dice.
 
-## 4. Seed: `tokenware-seed-v1`
+## 4. Seed: `lottabits-seed-v1`
 
 Produces a 24-word BIP39 mnemonic (256 bits of entropy) from 46 draws of set 64. The software adds no randomness.
 
@@ -105,7 +105,7 @@ Word 24 lies in block `block`, the BIP39 numbers `256 × block + 1` to `256 × b
   correct word at position `block + 1`. This is a cross-check only, never the rule.
 - Word 24 without such a device is calculated by the CLI (section 8) on an offline device.
 
-## 5. Password: `tokenware-password-88-v1`
+## 5. Password: `lottabits-password-88-v1`
 
 One draw of set 88 selects one character. The software adds no randomness.
 
@@ -141,7 +141,7 @@ Draw `n` (`1..88`) selects character number `n`. A password of length `L` needs 
 Each draw contributes `log2(88) ≈ 6.459` bits. 12 draws ≈ 77.5 bits, 16 draws ≈ 103.4 bits, 20 draws ≈ 129.2 bits.
 The recommended minimum is 12 characters.
 
-## 6. Passphrase: `tokenware-passphrase-7744-v1`
+## 6. Passphrase: `lottabits-passphrase-7744-v1`
 
 Two draws of set 88 select one word from a 7744-entry word list. The software adds no randomness.
 
@@ -173,18 +173,18 @@ Word lists are UTF-8 text without byte-order mark, one entry per line, each line
 | Identifier | Entries | Derivation | SHA-256 of the derived file |
 |---|---:|---|---|
 | `bip39-english` | 2048 | unchanged upstream file | `2f5eed53a4727b4bf8880d8f3f199efc90e58503646d9ff8eff3a2ed3b24dbda` |
-| `tokenware-en-7744-v1` | 7744 | first 7744 words of the upstream list, upstream order, dice numbers removed | `5c4caefc140efbf20d30e481123fb4beadb1324c12c315971f2bfe600ddafcdb` |
-| `tokenware-de-7744-v1` | 7744 | first 7744 lines of the upstream list, upstream order | `8023bf123831341641b1e33a26abdfb4b1739a5e01b3fbad62f35e77704ea156` |
+| `lottabits-en-7744-v1` | 7744 | first 7744 words of the upstream list, upstream order, dice numbers removed | `5c4caefc140efbf20d30e481123fb4beadb1324c12c315971f2bfe600ddafcdb` |
+| `lottabits-de-7744-v1` | 7744 | first 7744 lines of the upstream list, upstream order | `8023bf123831341641b1e33a26abdfb4b1739a5e01b3fbad62f35e77704ea156` |
 
 | Identifier | Upstream | Immutable reference | Upstream SHA-256 | License |
 |---|---|---|---|---|
 | `bip39-english` | `github.com/bitcoin/bips`, `bip-0039/english.txt` | commit `ce1862ac6bcffa1dd20aad858380e51e66e949ea` | as above | MIT (BIP 39 header) |
-| `tokenware-en-7744-v1` | EFF Long Wordlist, `www.eff.org/files/2016/07/18/eff_large_wordlist.txt` | file of 2016-07-18 (by hash) | `addd35536511597a02fa0a9ff1e5284677b8883b83e986e43f15a3db996b903e` | CC BY 4.0, © Electronic Frontier Foundation |
-| `tokenware-de-7744-v1` | `github.com/dys2p/wordlists-de`, `de-7776-v1.txt` | commit `6ef31b9aefb8735a7b066592393d12843ec502cd` | `440fa02c65591328d6351435d3824c27b483a049f4eca0b13456d8c5090442e7` | Unlicense, CC0 or BSD-3-Clause (choice) |
+| `lottabits-en-7744-v1` | EFF Long Wordlist, `www.eff.org/files/2016/07/18/eff_large_wordlist.txt` | file of 2016-07-18 (by hash) | `addd35536511597a02fa0a9ff1e5284677b8883b83e986e43f15a3db996b903e` | CC BY 4.0, © Electronic Frontier Foundation |
+| `lottabits-de-7744-v1` | `github.com/dys2p/wordlists-de`, `de-7776-v1.txt` | commit `6ef31b9aefb8735a7b066592393d12843ec502cd` | `440fa02c65591328d6351435d3824c27b483a049f4eca0b13456d8c5090442e7` | Unlicense, CC0 or BSD-3-Clause (choice) |
 
 The upstream files are stored unchanged next to the derived lists together with their license texts. A test re-derives each
-list from its upstream file and compares both hashes. Known properties, verified by tests: all entries unique; `tokenware-de`
-contains only `a`–`z`; `tokenware-en` contains `a`–`z` and the three hyphenated words `drop-down`, `felt-tip`, `t-shirt`;
+list from its upstream file and compares both hashes. Known properties, verified by tests: all entries unique; `lottabits-de`
+contains only `a`–`z`; `lottabits-en` contains `a`–`z` and the three hyphenated words `drop-down`, `felt-tip`, `t-shirt`;
 in both derived lists no word is a prefix of another.
 
 ## 8. Command-line interface
@@ -206,7 +206,7 @@ Common rules for all commands:
 - **Trust boundary:** standard input is untrusted (typing errors). Parsing is strict; there are no defaults for missing draws and
   no correction of invalid ones.
 
-### 8.1 `tokenware seed`
+### 8.1 `lottabits seed`
 - **Input:** exactly 46 draws in `1..64`.
 - **Output:** for each of the 24 words its position, the pair (none for word 24), the word number and the word; then the extra
   bits, the block with its number range, and the lines `Entropy source: 46 token draws` and `Software-generated randomness: none`.
@@ -216,7 +216,7 @@ Common rules for all commands:
 Example (batch input of 46 draws `01`; abbreviated):
 
 ```text
-$ tokenware seed < draws.txt
+$ lottabits seed < draws.txt
 01  01 01  0001  abandon
 …
 23  01 01  0001  abandon
@@ -224,32 +224,32 @@ $ tokenware seed < draws.txt
 Extra bits: 000 → block 0 (word numbers 1–256)
 ```
 
-### 8.2 `tokenware password`
+### 8.2 `lottabits password`
 - **Input:** 1 or more draws in `1..88`.
 - **Output:** the password, the class row under it, the draw numbers, and the strength (`N draws ≈ X bits`).
   Below 12 draws a warning goes to standard error.
 - **Errors:** no draws, a draw outside `1..88`.
 
 ```text
-$ printf '1 11 36 61 88 10' | tokenware password
+$ printf '1 11 36 61 88 10' | lottabits password
 0Aa!~9
 DULSSD
 Draws: 01 11 36 61 88 10
 Strength: 6 draws ≈ 38.8 bits (below the recommended minimum of 12 characters)
 ```
 
-### 8.3 `tokenware passphrase --wordlist en|de`
+### 8.3 `lottabits passphrase --wordlist en|de`
 - **Flag** `--wordlist` is required: the CLI never chooses a word list implicitly.
 - **Input:** an even number of draws (2 or more) in `1..88`.
 - **Output:** the passphrase, each word with its coordinate, the word-list identifier and the strength. Below 6 words a warning
   goes to standard error.
 - **Errors:** missing `--wordlist`, an odd number of draws, a draw outside `1..88`.
 
-### 8.4 `tokenware selftest`
+### 8.4 `lottabits selftest`
 Runs the built-in test vectors (section 10) and checks the SHA-256 of every embedded word list and of the password alphabet.
 Prints one line per check and exits with `1` if any check fails. Meant to be run on the offline device before real use.
 
-### 8.5 `tokenware version`
+### 8.5 `lottabits version`
 Prints the release version, the source revision, the Go version, and every identifier from section 1 with its SHA-256 where one
 exists.
 
@@ -310,7 +310,7 @@ path fruit abandon zoo crane deny amazing sword mail then glove elbow bone runwa
 
 **Passphrase coordinates:**
 
-| Coordinate | `tokenware-en-7744-v1` | `tokenware-de-7744-v1` |
+| Coordinate | `lottabits-en-7744-v1` | `lottabits-de-7744-v1` |
 |---|---|---|
 | `01-01` | abacus | aalen |
 | `01-88` | aghast | abladen |
@@ -323,7 +323,7 @@ path fruit abandon zoo crane deny amazing sword mail then glove elbow bone runwa
 - **Independent implementation:** `tools/crosscheck.py` is a second implementation of sections 4 to 6 in Python using only its
   standard library, written independently of the Go code. Users can run it to recompute any result from the same draws.
   CI runs it against `vectors/`.
-- **Self-test:** `tokenware selftest` (8.4) on the device that will be used.
+- **Self-test:** `lottabits selftest` (8.4) on the device that will be used.
 - **Releases** are reproducible (the same source and pinned toolchain give byte-identical binaries), signed without long-lived
   keys through the build platform's attestation (build provenance), and published with `SHA256SUMS` and an SBOM.
   `docs/verification.md` describes how to check a download and how to rebuild it.

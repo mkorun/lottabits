@@ -2,7 +2,7 @@
 
 Rules for every agent (and human) working in this repository. `CLAUDE.md` imports this file.
 
-Tokenware is a small, auditable human interface to physical randomness: numbered tokens in one bag create
+LottaBits is a small, auditable human interface to physical randomness: numbered tokens in one bag create
 BIP39 seeds, passwords and passphrases; software only calculates deterministically where mathematics requires it.
 Paper first: the printables are a primary interface, not decorative assets.
 
@@ -26,7 +26,7 @@ Paper first: the printables are a primary interface, not decorative assets.
 - Toolchain pinned in `mise.toml` (`mise install`; then `mise exec -- go ...` or put `~/.local/share/mise/shims` on `PATH`).
 - Standard library only. Any dependency, including `golang.org/x`, needs an ADR first; the default answer is no.
 - Layout: `internal/{bip39,password,passphrase}` hold pure functions (no I/O, no globals with state);
-  `cmd/tokenware` is a thin shell for input, output and messages. Functional core, imperative shell.
+  `cmd/lottabits` is a thin shell for input, output and messages. Functional core, imperative shell.
 - Errors are values; a message says what happened, why and what to do. Exit codes: 0 success, 1 failure, 2 usage error.
   stdout carries the result, stderr diagnostics.
 - Keep it small: functions short, low nesting, no boolean-flag parameters, no premature abstraction. Delete before adding.
@@ -38,7 +38,7 @@ Paper first: the printables are a primary interface, not decorative assets.
   CI adds `govulncheck`; `scripts/pre-push.sh` and CI add `gitleaks`. The gate must pass before every commit.
   A rule is either checked automatically or dropped.
 - Mappings are tested exhaustively (all 4096 seed draw pairs, all 88 password draws, all 7744 passphrase coordinates).
-  Test vectors live as data in `vectors/` (embedded for `tokenware selftest`); BIP39 results are cross-checked against
+  Test vectors live as data in `vectors/` (embedded for `lottabits selftest`); BIP39 results are cross-checked against
   official vectors and the independent implementation `tools/crosscheck.py`.
 - Tests are hermetic: no network, no clock, no randomness.
 

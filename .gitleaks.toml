@@ -1,4 +1,4 @@
-title = "tokenware gitleaks configuration"
+title = "lottabits gitleaks configuration"
 
 [extend]
 useDefault = true

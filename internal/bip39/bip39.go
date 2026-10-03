@@ -1,17 +1,17 @@
-// Package bip39 implements tokenware-seed-v1 (SPEC.md section 4) on top of plain BIP39 for 256-bit entropy.
+// Package bip39 implements lottabits-seed-v1 (SPEC.md section 4) on top of plain BIP39 for 256-bit entropy.
 // It contains no randomness: every result is a deterministic function of the draws.
 package bip39
 
 import (
 	"crypto/sha256"
 
-	"github.com/mkorun/tokenware/internal/draws"
-	"github.com/mkorun/tokenware/wordlists"
+	"github.com/mkorun/lottabits/internal/draws"
+	"github.com/mkorun/lottabits/wordlists"
 )
 
-// Parameters of tokenware-seed-v1.
+// Parameters of lottabits-seed-v1.
 const (
-	ID           = "tokenware-seed-v1"
+	ID           = "lottabits-seed-v1"
 	Tokens       = 64 // set 64
 	Draws        = 46 // 23 pairs
 	Words        = 24

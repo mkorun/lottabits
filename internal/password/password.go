@@ -1,15 +1,15 @@
-// Package password implements tokenware-password-88-v1 (SPEC.md section 5): one draw selects one character.
+// Package password implements lottabits-password-88-v1 (SPEC.md section 5): one draw selects one character.
 package password
 
 import (
 	"math"
 
-	"github.com/mkorun/tokenware/internal/draws"
+	"github.com/mkorun/lottabits/internal/draws"
 )
 
-// Parameters of tokenware-password-88-v1.
+// Parameters of lottabits-password-88-v1.
 const (
-	ID     = "tokenware-password-88-v1"
+	ID     = "lottabits-password-88-v1"
 	Tokens = 88
 	// Alphabet in canonical order: digits, upper case, lower case, symbols (SPEC.md 5.1).
 	Alphabet       = "0123456789" + "ABCDEFGHJKLMNOPQRSTUVWXYZ" + "abcdefghijkmnopqrstuvwxyz" + "!\"#$%&()*+,-./:;<=>?@[]^_{}~"

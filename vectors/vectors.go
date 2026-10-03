@@ -1,5 +1,5 @@
 // Package vectors embeds the normative test vectors (SPEC.md section 10) so that the tests and
-// `tokenware selftest` check the same data. It is data for the tokenware command, not a stable API.
+// `lottabits selftest` check the same data. It is data for the lottabits command, not a stable API.
 package vectors
 
 import (
@@ -16,7 +16,7 @@ var (
 	trezorFile []byte
 )
 
-// Seed is one tokenware-seed-v1 vector.
+// Seed is one lottabits-seed-v1 vector.
 type Seed struct {
 	Name      string `json:"name"`
 	Draws     []int  `json:"draws"`
@@ -28,7 +28,7 @@ type Seed struct {
 	Checksum  int    `json:"checksum"`
 }
 
-// Password is one tokenware-password-88-v1 vector.
+// Password is one lottabits-password-88-v1 vector.
 type Password struct {
 	Name     string `json:"name"`
 	Draws    []int  `json:"draws"`
@@ -36,7 +36,7 @@ type Password struct {
 	Classes  string `json:"classes"`
 }
 
-// Passphrase is one tokenware-passphrase-7744-v1 vector.
+// Passphrase is one lottabits-passphrase-7744-v1 vector.
 type Passphrase struct {
 	Name        string   `json:"name"`
 	Wordlist    string   `json:"wordlist"`
@@ -45,7 +45,7 @@ type Passphrase struct {
 	Coordinates []string `json:"coordinates"`
 }
 
-// Set holds all Tokenware vectors.
+// Set holds all LottaBits vectors.
 type Set struct {
 	Comment    string       `json:"comment"`
 	Seed       []Seed       `json:"seed"`
@@ -59,7 +59,7 @@ type BIP39 struct {
 	Mnemonic string
 }
 
-// Load decodes the Tokenware vectors strictly.
+// Load decodes the LottaBits vectors strictly.
 func Load() (Set, error) {
 	var set Set
 	decoder := json.NewDecoder(bytes.NewReader(vectorsFile))
