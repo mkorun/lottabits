@@ -1,0 +1,59 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  default: none
+  enable:
+    - depguard
+    - errcheck
+    - errorlint
+    - funlen
+    - gocognit
+    - gosec
+    - govet
+    - ineffassign
+    - nestif
+    - revive
+    - staticcheck
+    - unused
+  settings:
+    depguard:
+      rules:
+        # Core rule of the project: the tokens create secrets, the computer only calculates.
+        # Applies to tests as well: tests are deterministic and hermetic.
+        forbidden:
+          files:
+            - $all
+          deny:
+            - pkg: crypto/rand
+              desc: no software-generated randomness (the tokens create secrets)
+            - pkg: math/rand
+              desc: no software-generated randomness (the tokens create secrets)
+            - pkg: net
+              desc: no network code
+            - pkg: os/exec
+              desc: no subprocesses; test the CLI in-process
+            - pkg: log
+              desc: no logging (secrets must never be logged); write user messages explicitly
+            - pkg: unsafe
+              desc: not needed; keeps the audit surface small
+            - pkg: plugin
+              desc: not needed; keeps the audit surface small
+    funlen:
+      lines: 60
+      statements: 40
+    gocognit:
+      min-complexity: 15
+    nestif:
+      min-complexity: 4
+
+formatters:
+  enable:
+    - gofmt
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
