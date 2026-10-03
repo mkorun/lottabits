@@ -27,4 +27,11 @@ golangci-lint run ./...
 step "tests (race detector, no cache)"
 go test -race -count=1 ./...
 
+step "independent implementation (tools/crosscheck.py verify)"
+if ! crosscheck=$(python3 tools/crosscheck.py verify 2>&1); then
+  printf '%s\n' "$crosscheck" >&2
+  exit 1
+fi
+printf '%s\n' "$crosscheck" | tail -n 1
+
 printf '\ncheck: all gates passed\n'

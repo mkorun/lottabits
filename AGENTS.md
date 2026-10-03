@@ -33,11 +33,13 @@ Paper first: the printables are a primary interface, not decorative assets.
 
 ## Tests and gate
 - One gate, `mise run check` (`scripts/check.sh`), runs the same locally, in the pre-push hook and in CI: `gofmt`,
-  standard library only, `go vet`, `golangci-lint` (including the `depguard` import bans in `.golangci.yml`), `go test -race`.
+  standard library only, `go vet`, `golangci-lint` (including the `depguard` import bans in `.golangci.yml`), `go test -race`,
+  `tools/crosscheck.py verify` (Python standard library only).
   CI adds `govulncheck`; `scripts/pre-push.sh` and CI add `gitleaks`. The gate must pass before every commit.
   A rule is either checked automatically or dropped.
 - Mappings are tested exhaustively (all 4096 seed draw pairs, all 88 password draws, all 7744 passphrase coordinates).
-  Test vectors live as data in `testdata/`; BIP39 results are cross-checked against official vectors and an independent implementation.
+  Test vectors live as data in `vectors/` (embedded for `tokenware selftest`); BIP39 results are cross-checked against
+  official vectors and the independent implementation `tools/crosscheck.py`.
 - Tests are hermetic: no network, no clock, no randomness.
 
 ## Conventions

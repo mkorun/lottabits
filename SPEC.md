@@ -283,7 +283,7 @@ Required printables, each in English and German:
 
 ## 10. Test vectors
 
-Normative vectors live in `testdata/`. These three are part of this specification.
+Normative vectors live in `vectors/vectors.json`; the official BIP39 vectors used for the plain BIP39 part are in `vectors/trezor-vectors.json`. The following are part of this specification.
 
 **Seed, all draws `01`:** words 1–23 `abandon` (number 1), extra bits `000`, entropy all zero, checksum `0x66`,
 word 24 `art` (number 103).
@@ -322,7 +322,7 @@ path fruit abandon zoo crane deny amazing sword mail then glove elbow bone runwa
 
 - **Independent implementation:** `tools/crosscheck.py` is a second implementation of sections 4 to 6 in Python using only its
   standard library, written independently of the Go code. Users can run it to recompute any result from the same draws.
-  CI runs it against the vectors in `testdata/` and compares its output with the CLI.
+  CI runs it against `vectors/`.
 - **Self-test:** `tokenware selftest` (8.4) on the device that will be used.
 - **Releases** are reproducible (the same source and pinned toolchain give byte-identical binaries), signed without long-lived
   keys through the build platform's attestation (build provenance), and published with `SHA256SUMS` and an SBOM.
