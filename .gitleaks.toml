@@ -9,4 +9,6 @@ regexes = [
   '''^5c4caefc140efbf20d30e481123fb4beadb1324c12c315971f2bfe600ddafcdb$''',
   '''^8023bf123831341641b1e33a26abdfb4b1739a5e01b3fbad62f35e77704ea156$''',
   '''^a608b1e22ae80afcdbb5989a971da973d1632e38fca4ddcfbe57e919dab9badf$''',
+  # versioned public identifiers such as lottabits-passphrase-7744-v1 (SPEC.md section 1)
+  '''^lottabits-[a-z0-9-]+-v[0-9]+$''',
 ]

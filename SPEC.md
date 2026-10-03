@@ -197,37 +197,47 @@ in both derived lists no word is a prefix of another.
 
 Common rules for all commands:
 
-- **Language:** `--lang en|de` selects the language of messages and labels only (default `en`). It never selects a word list.
+- **Language:** `--lang en|de` (anywhere on the command line) selects the language of messages and labels only (default `en`).
+  It never selects a word list. Numbers use the language's decimal separator (`77.5` / `77,5`).
 - **Input:** draws are read from standard input, never from command-line arguments (which end up in shell history and process
   lists). A draw is one or two decimal digits (`7`, `07`); draws are separated by spaces, tabs, commas or line breaks.
 - **Interactive mode** (standard input is a terminal): the CLI prompts for one pair (seed, passphrase) or one draw (password) at a
   time, validates it immediately and asks again after an invalid entry. An empty entry ends input for password and passphrase.
-- **Batch mode** (standard input is not a terminal): all of standard input is read and validated; any invalid draw is an error.
+- **Batch mode** (standard input is not a terminal): all of standard input (at most 64 KiB) is read and validated; any invalid
+  draw is an error. In interactive mode, end of input before all seed draws are entered is an error.
 - **Echo:** input is visible. Hiding it would not protect the secret, which is displayed as the result in any case.
   Users clear the screen and the terminal scroll-back afterwards (documented in the offline guide).
 - **Output:** results go to standard output, prompts and diagnostics to standard error. Nothing is written to files, logged,
   copied to the clipboard or sent over a network.
 - **Exit codes:** `0` success, `1` invalid input or failed self-test, `2` usage error (unknown command or flag).
-- **Errors** name the position and the rule, for example `draw 17: 65 is outside 01–64`.
+- **Errors** name the position and the rule, for example `draw 17: "65" is not a number from 01 to 64`.
 - **Trust boundary:** standard input is untrusted (typing errors). Parsing is strict; there are no defaults for missing draws and
   no correction of invalid ones.
 
 ### 8.1 `lottabits seed`
 - **Input:** exactly 46 draws in `1..64`.
-- **Output:** for each of the 24 words its position, the pair (none for word 24), the word number and the word; then the extra
-  bits, the block with its number range, and the lines `Entropy source: 46 token draws` and `Software-generated randomness: none`.
+- **Output:** for each of the 24 words its position, the pair (none for word 24), the word number (four digits) and the word;
+  then the extra bits with the block and its number range, a hint for hardware wallets (section 4.5), and the lines
+  `Entropy source: 46 token draws` and `Software-generated randomness: none`.
 - **Flag** `--details`: additionally prints the entropy (hexadecimal) and the checksum byte, for cross-verification.
 - **Errors:** fewer or more than 46 draws, a draw outside `1..64`.
 
-Example (batch input of 46 draws `01`; abbreviated):
+Example (batch input of 46 draws `01`; rows 03 to 22 omitted):
 
 ```text
 $ lottabits seed < draws.txt
-01  01 01  0001  abandon
-…
-23  01 01  0001  abandon
-24         0103  art
-Extra bits: 000 → block 0 (word numbers 1–256)
+LottaBits seed (lottabits-seed-v1)
+
+#   Draws  Number  Word
+01  01 01  0001    abandon
+02  01 01  0001    abandon
+23  01 01  0001    abandon
+24         0103    art
+
+Extra bits: 000 -> block 0, word numbers 1–256
+Hardware wallet: pick the final word numbered 1–256, or enter the extra bits 000 in this order.
+Entropy source: 46 token draws
+Software-generated randomness: none
 ```
 
 ### 8.2 `lottabits password`
@@ -238,11 +248,13 @@ Extra bits: 000 → block 0 (word numbers 1–256)
 
 ```text
 $ printf '1 11 36 61 88 10' | lottabits password
-0Aa!~9
-DULSSD
-Draws: 01 11 36 61 88 10
-Strength: 6 draws ≈ 38.8 bits (below the recommended minimum of 12 characters)
+Password:  0Aa!~9
+Classes:   DULSSD  (D digit, U upper case, L lower case, S symbol)
+Draws:     01 11 36 61 88 10
+Strength:  6 draws ≈ 38.8 bits
 ```
+
+Standard error: `Warning: fewer than the recommended 12 characters.`
 
 ### 8.3 `lottabits passphrase --wordlist en|de`
 - **Flag** `--wordlist` is required: the CLI never chooses a word list implicitly.
