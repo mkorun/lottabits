@@ -1,0 +1,11 @@
+# build output
+/bin/
+/dist/
+*.test
+*.out
+
+# editors and OS
+.vscode/
+.idea/
+*:Zone.Identifier
+.DS_Store
