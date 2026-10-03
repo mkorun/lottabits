@@ -4,4 +4,4 @@
 set -eu
 cd "$(dirname "$0")/.."
 mise exec -- sh scripts/check.sh
-mise exec -- gitleaks git --redact --no-banner .
+mise exec -- gitleaks git --redact --no-banner --config .gitleaks.toml .

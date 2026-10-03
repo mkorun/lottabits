@@ -53,4 +53,4 @@ jobs:
           # checksum of the release tarball for the version pinned in mise.toml; update both together
           echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  gitleaks.tar.gz" | sha256sum -c -
           tar -xzf gitleaks.tar.gz gitleaks
-      - run: ./gitleaks git --redact --verbose .
+      - run: ./gitleaks git --redact --verbose --config .gitleaks.toml .
