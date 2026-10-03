@@ -318,7 +318,19 @@ path fruit abandon zoo crane deny amazing sword mail then glove elbow bone runwa
 | `44-44` | mandatory | kaltgestellt |
 | `88-88` | yiddish | zwanzig |
 
-## 11. Non-goals for v1
+## 11. Verification
+
+- **Independent implementation:** `tools/crosscheck.py` is a second implementation of sections 4 to 6 in Python using only its
+  standard library, written independently of the Go code. Users can run it to recompute any result from the same draws.
+  CI runs it against the vectors in `testdata/` and compares its output with the CLI.
+- **Self-test:** `tokenware selftest` (8.4) on the device that will be used.
+- **Releases** are reproducible (the same source and pinned toolchain give byte-identical binaries), signed without long-lived
+  keys through the build platform's attestation (build provenance), and published with `SHA256SUMS` and an SBOM.
+  `docs/verification.md` describes how to check a download and how to rebuild it.
+- **Printables:** every data page carries a short hash of its data; `docs/verification.md` describes spot checks of booklet
+  entries against an independent copy of the word list.
+
+## 12. Non-goals for v1
 
 - No random number generation of any kind, no network access, no persistence, no clipboard.
 - No BIP39 lengths other than 24 words, no BIP39 word lists other than English.
