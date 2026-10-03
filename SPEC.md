@@ -103,6 +103,12 @@ Word 24 lies in block `block`, the BIP39 numbers `256 × block + 1` to `256 × b
   candidates MUST NOT be relied on.
 - Informative: the English BIP39 list is sorted alphabetically, so a list of the eight candidates in alphabetical order has the
   correct word at position `block + 1`. This is a cross-check only, never the rule.
+- Word 24 with a device that accepts the final entropy bits directly (for example as coin flips): the user enters
+  `extra_1`, `extra_2`, `extra_3` in this order; they are the three most significant bits of word 24 and the device adds the
+  checksum. No candidate list is involved.
+- `docs/hardware-wallets.md` lists which devices support which of these two paths, with sources, and marks every entry that
+  has not been tested on a real device. Some devices need a companion app to start a recovery; the documentation MUST say so
+  and MUST NOT claim a computer-free workflow for them.
 - Word 24 without such a device is calculated by the CLI (section 8) on an offline device.
 
 ## 5. Password: `lottabits-password-88-v1`
