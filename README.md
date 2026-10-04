@@ -4,15 +4,14 @@
 >
 > **Seed. Password. Passphrase.**
 >
-> **One bag. Numbered chips. No software-generated randomness.**
->
-> **The chips create secrets. The computer only calculates.**
+> **Draw bits. Make secrets.**
 >
 > **Paper first. Software only where mathematics requires it.**
 
 LottaBits is not a new cryptographic primitive. It explores a simpler human interface to physical randomness: numbered
-chips, drawn from one opaque bag with replacement, create a BIP39 seed, a password or a passphrase. Everything except the
-checksum of a seed's last word can be done on paper; the small command-line tool only calculates.
+chips, drawn from one opaque bag with replacement, create a BIP39 seed, a password or a passphrase, with no
+software-generated randomness. Everything except the checksum of a seed's last word can be done on paper; the small
+command-line tool only calculates.
 
 The name refers to *drawing lots*: every draw from the bag yields a few bits of physical randomness. Chips in, bits out
 – they even rhyme a little.
@@ -20,6 +19,17 @@ The name refers to *drawing lots*: every draw from the bag yields a few bits of 
 It started in 2024 with a bag of counting chips from a school-supply shop, number stickers and a printed booklet: an
 experiment in making a Bitcoin seed from one bag of chips instead of dice. LottaBits is the cleaned-up, tested and
 documented version of that experiment.
+
+## Where it is useful
+
+- **Passphrases you have to remember**: the master password of a password manager, the password of an encrypted mail
+  account, disk encryption. No password manager can hold these for you. Six words drawn from the bag give about 77.5 bits
+  and need nothing but the printed booklet. This is the most practical use of LottaBits.
+- **A seed you want to create and check yourself.** LottaBits started as a personal Bitcoin experiment. Most people are
+  better served by a reputable hardware wallet that generates its own seed; LottaBits is for those who deliberately want
+  every bit to come from something they can hold.
+- **Random passwords**, for completeness. A password manager usually does this better; the chips help where none is at
+  hand, for a Wi-Fi key or a firmware password.
 
 > **Status:** release candidate, not audited. Before you use it for anything of value, read [SECURITY.md](SECURITY.md)
 > and try the seed workflow with a test wallet first.
