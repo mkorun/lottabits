@@ -6,3 +6,12 @@ gitleaks = "8.30.1"
 [tasks.check]
 description = "The single gate (same as pre-push and CI)"
 run = "sh scripts/check.sh"
+
+[tasks.printables]
+description = "Generate the printables (HTML) into dist/printables"
+run = "go run ./cmd/printables -out dist/printables"
+
+[tasks.pdf]
+description = "Render dist/printables to PDF with headless Chrome and check page counts"
+depends = ["printables"]
+run = "python3 tools/render_pdfs.py dist/printables dist/pdf"

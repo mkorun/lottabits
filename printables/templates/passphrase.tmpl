@@ -1,0 +1,25 @@
+{{define "passphrase-booklet"}}{{template "head" .}}{{range .Pages}}{{template "pagestart" (ctx $ .)}}
+<div class="ppage">
+<h2><span>{{t "first_draw"}} <u class="first">{{two .Data.First}}</u></span><span class="sub">{{$.Extra}}</span></h2>
+<table>
+<thead><tr><th>{{t "col_coordinate"}}</th><th>{{t "col_word"}}</th><th class="sep"></th><th>{{t "col_coordinate"}}</th><th>{{t "col_word"}}</th></tr></thead>
+<tbody>
+{{range $i, $r := .Data.Rows}}<tr{{if odd $i}} class="shade"{{end}}>{{template "pp-entry" $r.Left}}<td class="sep"></td>{{template "pp-entry" $r.Right}}</tr>
+{{end}}</tbody>
+</table>
+</div>
+{{template "pageend" (ctx $ .)}}{{end}}{{template "tail"}}{{end}}
+
+{{define "pp-entry"}}<td class="b"><u>{{two .First}}</u>-<u>{{two .Second}}</u></td><td class="w">{{.Word}}</td>{{end}}
+
+{{define "passphrase-record"}}{{template "head" .}}{{range .Pages}}{{template "pagestart" (ctx $ .)}}
+<ol class="steps"><li>{{t "pp_step_1"}}</li><li>{{t "pp_step_2"}}</li></ol>
+<p>{{t "pp_wordlist"}}: {{range index $.Extra "Lists"}}<span class="check"></span>{{.}} &nbsp; &nbsp; {{end}}</p>
+<table class="record">
+<thead><tr><th>#</th><th>{{t "col_first_draw"}}</th><th>{{t "col_second_draw"}}</th><th>{{t "col_coordinate"}}</th><th>{{t "col_word"}}</th></tr></thead>
+<tbody>
+{{range index $.Extra "Rows"}}<tr><td class="num">{{two .}}</td><td><span class="circle"></span></td><td><span class="circle"></span></td><td><span class="box" style="width: 18mm"></span></td><td><span class="box" style="width: 70mm"></span></td></tr>
+{{end}}</tbody>
+</table>
+{{template "strength" (index $.Extra "Strength")}}
+{{template "pageend" (ctx $ .)}}{{end}}{{template "tail"}}{{end}}

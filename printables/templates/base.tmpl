@@ -1,0 +1,30 @@
+{{define "head"}}<!doctype html>
+<html lang="{{.Lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="lottabits printables {{.Version}}">
+<title>{{t .Title}} – LottaBits {{.Version}}</title>
+<style>
+{{.Style}}
+</style>
+</head>
+<body class="{{if .Landscape}}landscape{{else}}portrait{{end}}">
+{{end}}
+
+{{define "pagestart"}}<section class="page">
+<header class="head"><h1>{{t .Doc.Title}}</h1><span class="sub">{{t .Doc.Sub}}{{if .Doc.Calibrate}} · {{t "calibration"}}<span class="calibration"></span>{{end}}</span></header>
+<div class="body">
+{{end}}
+
+{{define "pageend"}}</div>
+<footer class="foot"><span>LottaBits {{.Doc.Version}}{{range .Doc.IDs}} · {{.}}{{end}} · {{t "license"}}</span><span>{{if .Page.Hash}}{{t "data"}} <span class="hash">{{.Page.Hash}}</span> · {{end}}{{t "page"}} {{.Page.Number}}/{{.Page.Total}}</span></footer>
+</section>
+{{end}}
+
+{{define "tail"}}</body>
+</html>
+{{end}}
+
+{{define "strength"}}<table class="strength"><thead><tr><th>{{t "col_length"}}</th><th>{{t "col_strength"}}</th></tr></thead><tbody>
+{{range .}}<tr><td>{{.Length}}</td><td>≈ {{dec .Bits}} {{t "bits_unit"}}</td></tr>
+{{end}}</tbody></table>{{end}}

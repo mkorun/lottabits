@@ -1,0 +1,26 @@
+{{define "quick"}}{{template "head" .}}{{range .Pages}}{{template "pagestart" (ctx $ .)}}
+<div class="ref">
+<h2>{{t "quick_kit"}}</h2><p>{{t "quick_kit_text"}}</p>
+<h2>{{t "quick_procedure"}}</h2>
+<ol class="steps"><li>{{t "quick_step_1"}}</li><li>{{t "quick_step_2"}}</li><li>{{t "quick_step_3"}}</li><li>{{t "quick_step_4"}}</li><li>{{t "quick_step_5"}}</li></ol>
+<div class="cards">
+<div class="card"><h3>{{t "quick_seed"}}</h3><p>{{t "quick_seed_text"}}</p></div>
+<div class="card"><h3>{{t "quick_password"}}</h3><p>{{t "quick_password_text"}}</p></div>
+<div class="card"><h3>{{t "quick_passphrase"}}</h3><p>{{t "quick_passphrase_text"}}</p></div>
+</div>
+<p class="warn">{{t "quick_principle"}}</p>
+</div>
+{{template "pageend" (ctx $ .)}}{{end}}{{template "tail"}}{{end}}
+
+{{define "index"}}{{template "head" .}}{{range .Pages}}{{template "pagestart" (ctx $ .)}}
+<div class="ref">
+<p>{{t "index_intro"}}</p>
+<p class="warn">{{t "index_print"}}</p>
+<table>
+<thead><tr><th>{{t "index_column_file"}}</th><th>{{t "index_column_desc"}}</th></tr></thead>
+<tbody>
+{{range $.Extra}}<tr><td><a href="{{.Name}}.html">{{t .Title}}</a>{{if eq .Template "passphrase-booklet"}} ({{.Extra}}){{end}}</td><td class="desc">{{t (desc .Title)}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+{{template "pageend" (ctx $ .)}}{{end}}{{template "tail"}}{{end}}

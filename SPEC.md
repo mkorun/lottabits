@@ -279,7 +279,7 @@ and from one set of templates for all languages; a translation changes text only
 Every printable MUST:
 
 - fit A4 portrait or landscape and print legibly in black and white,
-- use no external fonts, scripts, style sheets or network resources,
+- use no external fonts, scripts, style sheets or network resources (fonts are embedded, see ADR 0003),
 - show the release version and the identifiers of the data it contains on every page,
 - show token numbers with two digits and underlined (so `06`/`90`, `16`/`91`, `18`/`81`, `19`/`61`, `68`/`89` cannot be
   confused when rotated) and mark tokens `65`–`88` with a distinct black-and-white feature (double ring).
@@ -290,14 +290,36 @@ Required printables, each in English and German:
 |---|---|
 | Inventory sheet | one circle per token `01`–`88` at token size (default 25 mm, configurable) for the completeness check |
 | Cut-out tokens | tokens `01`–`88` to cut from card stock; documented as a low-assurance option |
-| Seed booklet | section 4.5, 32 pages of 64 entries, imposed as an A5 booklet on A4 |
+| Seed booklet | section 4.5: 32 groups of 64 entries, two groups (A5 halves) per A4 landscape page in reading order, 16 pages, printable single-sided |
 | Seed record sheet | 23 rows: draws, word number, word, extra bit (rows 1–3); row 24 with the block |
 | Seed quick reference | extra bits → block → number range (table of 4.4), first and last word of each block |
 | Password character map | section 5.1 with numbers, classes, unambiguous glyphs and symbol names |
 | Password record sheet | rows with draw number, character and class |
-| Passphrase booklet | 7744 words in coordinate order, one per word-list identifier |
+| Passphrase booklet | 7744 words in coordinate order, one page per first draw (88 pages), one booklet per word-list identifier |
 | Passphrase record sheet | rows with both draws, coordinate and word, plus the word-list identifier |
 | Quick reference | one page: procedure of section 3 and the three modes |
+| Index | the list of printables with their purpose and printing instructions |
+
+Token sheets carry a 50 mm calibration line so that the user can check that the print was not scaled.
+
+### 9.1 Data hash
+Pages that carry data (seed booklet, seed quick reference, password character map, passphrase booklets) show a data hash:
+the first 16 hexadecimal digits of SHA-256 over the page's data lines, each terminated by `LF`, written in groups of four.
+The data lines are, in this order:
+
+| Printable | One line per entry |
+|---|---|
+| Seed booklet | `AA BB NNNN word` for each group on the page (first draw `AA` from `01` to `32`), second draws `BB` from `01` to `64` |
+| Seed quick reference | `bits block NNNN-NNNN first last` for blocks 0 to 7 |
+| Password character map | `NN c K` (number, character, class) for numbers `01` to `88` |
+| Passphrase booklet | `AA-BB word` for second draws `BB` from `01` to `88` |
+
+### 9.2 Generation and checks
+`go run ./cmd/printables -out DIR` writes `DIR/en/*.html`, `DIR/de/*.html` and `DIR/manifest.json` (SHA-256 of every file
+and the data hash of every page). `tools/check_printables.py DIR` reads the visible entries of the generated files, recomputes
+every mapping and data hash independently, compares them with the manifest and checks that both languages print identical
+data. `tools/render_pdfs.py DIR PDF_DIR` renders PDFs with headless Chrome and fails if a document has more pages than its
+manifest lists (overflow). The HTML files are canonical; PDFs are a convenience and not byte-reproducible.
 
 ## 10. Test vectors
 
@@ -345,7 +367,7 @@ path fruit abandon zoo crane deny amazing sword mail then glove elbow bone runwa
 - **Releases** are reproducible (the same source and pinned toolchain give byte-identical binaries), signed without long-lived
   keys through the build platform's attestation (build provenance), and published with `SHA256SUMS` and an SBOM.
   `docs/verification.md` describes how to check a download and how to rebuild it.
-- **Printables:** every data page carries a short hash of its data; `docs/verification.md` describes spot checks of booklet
+- **Printables:** every data page carries a short hash of its data (9.1); `docs/verification.md` describes spot checks of booklet
   entries against an independent copy of the word list.
 
 ## 12. Non-goals for v1

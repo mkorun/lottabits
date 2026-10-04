@@ -1,0 +1,5 @@
+{{define "tokens"}}{{template "head" .}}{{$grid := index .Extra "Grid"}}{{range .Pages}}{{template "pagestart" (ctx $ .)}}
+<div class="tokens {{index $.Extra "Class"}}" style="grid-template-columns: repeat({{$grid.Columns}}, {{mm $grid.Diameter}});">
+{{range .Data}}<div class="token{{if .High}} high{{end}}" style="width: {{mm $grid.Diameter}}; height: {{mm $grid.Diameter}}; font-size: {{mm (fontSize $grid.Diameter)}};"><u>{{two .N}}</u></div>
+{{end}}</div>
+{{template "pageend" (ctx $ .)}}{{end}}{{template "tail"}}{{end}}
