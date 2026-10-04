@@ -36,14 +36,19 @@ This procedure applies to all modes. Printables and documentation MUST describe 
 
 1. Use chips that differ only in their printed number: same shape, size, weight, material and surface. Chips `65`–`88`
    MAY be visually distinct (for example another colour) so the two sets can share one bag and be separated easily.
-2. Before each session, lay all chips of the set onto the inventory sheet and confirm that every number is present exactly once.
-3. Seed mode uses set 64: chips `65`–`88` MUST be removed from the bag. Password and passphrase modes use set 88.
-4. For every draw: mix thoroughly, draw one chip without looking, record its number, put it back. Draws are always
-   **with replacement**.
-5. Draw unobserved: no cameras, no onlookers, no recording devices in view.
+   Numbered balls of a bingo set count as chips.
+2. Use an opaque container that allows thorough mixing and drawing without looking. The bag is the standard; a box with a
+   hand opening or a bingo cage that releases one ball MAY be used instead (`docs/equipment.md`).
+3. Before each session, lay all chips of the set onto the inventory sheet and confirm that every number is present exactly once.
+4. Seed mode uses set 64: chips `65`–`88` MUST be removed from the container. Password and passphrase modes use set 88.
+5. For every draw: close the container and shake it for about five seconds, reach into the middle without looking (or let the
+   cage release a ball), record the number, put the chip back. Draws are always **with replacement**.
+6. Draw unobserved: no cameras, no onlookers, no recording devices in view.
 
 Under these conditions every draw is independent and uniformly distributed over the set. LottaBits makes no claim beyond that;
-it does not claim that chips are more random than fair dice.
+it does not claim that chips are more random than fair dice. Small, constant differences between chips cost almost no
+entropy (one of 64 chips drawn 20 % less often than it should costs 0.0005 bit per draw, 0.02 bit over a whole seed); the real risks are
+procedural: poor mixing, drawing without replacement, chips that can be told apart by touch.
 
 ## 4. Seed: `lottabits-seed-v1`
 

@@ -53,7 +53,7 @@ companion app to start a recovery). The normative definition, test vectors inclu
 ## What you need
 
 - an opaque bag and 88 chips that differ only in their printed number (01–64 and 65–88 may differ in colour so that both
-  sets can share the bag),
+  sets can share the bag); a box with a hand opening or a bingo cage works too ([equipment](docs/equipment.md)),
 - the printables of your language (English or German): booklets, record sheets, character map, quick references,
 - for a seed without a suitable hardware wallet: the `lottabits` command on an offline device ([offline guide](docs/offline-use.md)).
 
@@ -90,6 +90,7 @@ rebuilt byte for byte. See [docs/verification.md](docs/verification.md).
 
 - [SPEC.md](SPEC.md) – the normative specification
 - [SECURITY.md](SECURITY.md) – safe use and reporting vulnerabilities
+- [docs/equipment.md](docs/equipment.md) – chips, bags, boxes and bingo cages
 - [docs/threat-model.md](docs/threat-model.md) – what can go wrong and what LottaBits does about it
 - [docs/offline-use.md](docs/offline-use.md) – where to run the command for a real seed
 - [docs/hardware-wallets.md](docs/hardware-wallets.md) – which devices support the paper workflow for word 24

@@ -20,10 +20,16 @@ mitigation and what remains. The software is small; most risks are physical or h
 | Chips differ by touch, weight, size or shape (worn edges, sticker thickness, cut-out paper) | the drawer can feel numbers, draws are biased | identical chips with stickers of the same size; never look into the bag; cut-out chips documented as low assurance | small differences remain undetectable by eye |
 | Incomplete set (lost or duplicated chip) | some numbers impossible or twice as likely | inventory sheet before every session: every circle covered exactly once | a chip lost during the session; check again afterwards |
 | Chips 65–88 left in the bag for a seed | a draw above 64 | separate colours for 65–88; the record sheet and the command reject numbers above 64 | none: the draw is invalid, not biased (draw again) |
-| Poor mixing | consecutive draws correlate | shake or stir the bag after putting the chip back, every time | depends on the person; not measurable by the software |
+| Poor mixing, the returned chip drawn again from the top | consecutive draws correlate | close the bag (or box) and shake it for about five seconds after every return, reach into the middle; a bingo cage mixes mechanically ([equipment](equipment.md)) | depends on the person; not measurable by the software |
+| Slightly unequal chips or dice (stickers, wear, manufacturing) | a small, constant bias | none needed: the entropy loss is tiny, see below | gross differences that can be felt are covered by the first row |
 | Drawing without replacement | later draws depend on earlier ones, fewer possible results | every procedure says "put it back"; record sheets have one circle per draw | a human slip is not detectable afterwards |
 | Choosing instead of drawing (redrawing a result one dislikes) | the result is no longer uniform | documentation never suggests redrawing a valid result | user behaviour |
 | Observation (people, cameras, phones, smart speakers, windows) | the secret is known to someone else | draw alone, no devices in view; the printables say so | depends on the room |
+
+Small, constant biases cost very little. If one of 64 chips is drawn 20 % less often than it should, a draw loses 0.0005 bit
+and a whole seed of 46 draws 0.02 bit; even a chip drawn only half as often costs 0.16 bit per seed. For comparison, a common die whose six falls 1.5 percentage points too rarely loses 0.0015 bit
+per roll, and even a die with one face at 20 % loses only 0.0055 bit. What matters are gross, procedural failures: chips that
+can be felt, poor mixing, drawing without replacement.
 
 The mapping itself adds no bias: all 4096 pairs map to each BIP39 word exactly twice and the extra bit is independent of
 the word (tested exhaustively); password and passphrase mappings are one-to-one.
