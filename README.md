@@ -14,9 +14,14 @@ LottaBits is not a new cryptographic primitive. It explores a simpler human inte
 chips, drawn from one opaque bag with replacement, create a BIP39 seed, a password or a passphrase. Everything except the
 checksum of a seed's last word can be done on paper; the small command-line tool only calculates.
 
-The name refers to *drawing lots*: every draw from the bag yields a few bits of physical randomness.
+The name refers to *drawing lots*: every draw from the bag yields a few bits of physical randomness. Chips in, bits out
+– they even rhyme a little.
 
-> **Status:** release candidate, not audited. Read [SECURITY.md](SECURITY.md) before you use it for anything of value,
+It started in 2024 with a bag of counting chips from a school-supply shop, number stickers and a printed booklet, as a way
+to make a Bitcoin seed without rolling dice a hundred times. LottaBits is the cleaned-up, tested and documented version
+of that experiment.
+
+> **Status:** release candidate, not audited. Before you use it for anything of value, read [SECURITY.md](SECURITY.md)
 > and try the seed workflow with a test wallet first.
 
 ## Three modes
@@ -41,8 +46,9 @@ extra bit   = 0 if a ≤ 32, 1 if a ≥ 33
 
 23 pairs (46 draws) give the first 23 words, 253 bits. The extra bits of the first three pairs are the three missing
 entropy bits, so all 256 bits come from the chips. Word 24 is three entropy bits plus the 8-bit SHA-256 checksum; the
-three bits fix one of eight blocks of 256 words, which lets you pick word 24 on a hardware wallet that lists the valid
-final words, without any further computer. The normative definition, test vectors included, is in [SPEC.md](SPEC.md).
+three bits fix one of eight blocks of 256 words. Some hardware wallets list the valid final words or accept the final
+bits; with those you can finish the seed on the device itself ([which ones](docs/hardware-wallets.md); a few need their
+companion app to start a recovery). The normative definition, test vectors included, is in [SPEC.md](SPEC.md).
 
 ## What you need
 
@@ -53,10 +59,13 @@ final words, without any further computer. The normative definition, test vector
 
 ## The command
 
+Needed only for a seed whose word 24 is not chosen on a hardware wallet. For passwords and passphrases it is an optional
+convenience: it saves the lookups, prints the character classes and can double-check a result made on paper.
+
 ```sh
 lottabits selftest                      # run on the device you will use: checks vectors and data hashes
 lottabits seed                          # asks for 23 pairs of draws, prints 24 words
-lottabits password                      # one draw per character, empty line to finish
+lottabits password                      # optional: one draw per character, empty line to finish
 lottabits passphrase --wordlist de      # two draws per word; the word list is always chosen explicitly
 lottabits seed --lang de                # German messages; never changes a word list
 ```
