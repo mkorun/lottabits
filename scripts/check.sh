@@ -1,6 +1,7 @@
 #!/bin/sh
 # The single gate: the same command runs locally (`mise run check`), as a pre-push hook and in CI.
 set -eu
+export PYTHONDONTWRITEBYTECODE=1
 cd "$(dirname "$0")/.."
 step() { printf '\n== %s\n' "$1"; }
 
@@ -48,5 +49,13 @@ if ! e2e=$(python3 tools/crosscheck.py cli "$build/lottabits" 2>&1); then
   exit 1
 fi
 printf '%s\n' "$e2e" | tail -n 1
+
+step "printables: generate and check independently (tools/check_printables.py)"
+go run ./cmd/printables -out "$build/printables"
+if ! printed=$(python3 tools/check_printables.py "$build/printables" 2>&1); then
+  printf '%s\n' "$printed" >&2
+  exit 1
+fi
+printf '%s\n' "$printed" | tail -n 1
 
 printf '\ncheck: all gates passed\n'
