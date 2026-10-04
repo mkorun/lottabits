@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/mkorun/lottabits/internal/bip39"
-	"github.com/mkorun/lottabits/internal/passphrase"
 	"github.com/mkorun/lottabits/internal/password"
 	"github.com/mkorun/lottabits/wordlists"
 )
@@ -21,15 +20,16 @@ const (
 	headHeight = 7.0
 	footHeight = 5.0
 	bodyPad    = 2.0
-	tokenGap   = 1.5
+	chipGap    = 1.5
 	setSmall   = 64
 	setLarge   = 88
 )
 
-// page is one printed page. Hash is the short data hash of SPEC.md section 11, or empty for pages without data.
+// page is one printed A4 page (one side of a sheet). Hashes are the data hashes (SPEC.md 9.1) printed on it, in
+// document order; booklet sides carry one per A5 page with data.
 type page struct {
 	Number, Total int
-	Hash          string
+	Hashes        []string
 	Data          any
 }
 
@@ -48,114 +48,42 @@ func dataHash(lines []string) string {
 	return h[0:4] + " " + h[4:8] + " " + h[8:12] + " " + h[12:16]
 }
 
-// token is one token circle; High marks tokens 65–88.
-type token struct {
+// chip is one chip circle; High marks chips 65–88.
+type chip struct {
 	N    int
 	High bool
 }
 
-// tokenGrid lays tokens of the given diameter on landscape pages, keeping 01–64 and 65–88 on separate pages.
-type tokenGrid struct {
+// chipGrid lays chips of the given diameter on landscape pages, keeping 01–64 and 65–88 on separate pages.
+type chipGrid struct {
 	Columns  int
 	Diameter float64
 }
 
-func newTokenGrid(diameter float64) (tokenGrid, int) {
+func newChipGrid(diameter float64) (chipGrid, int) {
 	width := a4Long - 2*pagePad
 	height := a4Short - 2*pagePad - headHeight - footHeight - bodyPad
-	columns := int(math.Floor((width + tokenGap) / (diameter + tokenGap)))
-	rows := int(math.Floor((height + tokenGap) / (diameter + tokenGap)))
-	return tokenGrid{Columns: columns, Diameter: diameter}, columns * rows
+	columns := int(math.Floor((width + chipGap) / (diameter + chipGap)))
+	rows := int(math.Floor((height + chipGap) / (diameter + chipGap)))
+	return chipGrid{Columns: columns, Diameter: diameter}, columns * rows
 }
 
-func tokenPages(diameter float64) ([]page, tokenGrid, error) {
-	grid, capacity := newTokenGrid(diameter)
+func chipPages(diameter float64) ([]page, chipGrid, error) {
+	grid, capacity := newChipGrid(diameter)
 	if capacity < 1 {
-		return nil, grid, fmt.Errorf("token diameter %.1f mm does not fit on A4", diameter)
+		return nil, grid, fmt.Errorf("chip diameter %.1f mm does not fit on A4", diameter)
 	}
 	var pages []page
 	for _, set := range [][2]int{{1, setSmall}, {setSmall + 1, setLarge}} {
 		for first := set[0]; first <= set[1]; first += capacity {
-			var tokens []token
+			var chips []chip
 			for n := first; n <= set[1] && n < first+capacity; n++ {
-				tokens = append(tokens, token{N: n, High: n > setSmall})
+				chips = append(chips, chip{N: n, High: n > setSmall})
 			}
-			pages = append(pages, page{Data: tokens})
+			pages = append(pages, page{Data: chips})
 		}
 	}
 	return numberPages(pages), grid, nil
-}
-
-// entry is one booklet entry: the second draw, the word number (seed only) and the word.
-type entry struct {
-	First, Second int
-	Number        int
-	Word          string
-}
-
-// entryPair is one table row with a left and a right entry.
-type entryPair struct {
-	Left, Right entry
-}
-
-// seedGroup is one booklet half: first draws Low and Low+32 share 64 entries.
-type seedGroup struct {
-	Low, High int
-	Rows      []entryPair
-}
-
-func seedEntry(first, second int) entry {
-	index, _ := bip39.PairIndex(first, second)
-	return entry{First: first, Second: second, Number: index + 1, Word: wordlists.BIP39English().Word(index)}
-}
-
-// seedBookletPages puts two groups (first draws n and n+1) on each landscape page: 16 pages.
-func seedBookletPages() []page {
-	const groupsPerPage, half = 2, setSmall / 2
-	var pages []page
-	for low := 1; low <= half; low += groupsPerPage {
-		var groups []seedGroup
-		var lines []string
-		for g := low; g < low+groupsPerPage; g++ {
-			group := seedGroup{Low: g, High: g + half}
-			for second := 1; second <= half; second++ {
-				group.Rows = append(group.Rows, entryPair{Left: seedEntry(g, second), Right: seedEntry(g, second+half)})
-			}
-			for second := 1; second <= setSmall; second++ {
-				e := seedEntry(g, second)
-				lines = append(lines, fmt.Sprintf("%02d %02d %04d %s", e.First, e.Second, e.Number, e.Word))
-			}
-			groups = append(groups, group)
-		}
-		pages = append(pages, page{Hash: dataHash(lines), Data: groups})
-	}
-	return numberPages(pages)
-}
-
-// passphrasePage is one booklet page: first draw First, 88 entries in two columns.
-type passphrasePage struct {
-	First int
-	Rows  []entryPair
-}
-
-func passphraseBookletPages(list wordlists.List) []page {
-	const half = setLarge / 2
-	var pages []page
-	for first := 1; first <= setLarge; first++ {
-		p := passphrasePage{First: first}
-		entryAt := func(second int) entry {
-			return entry{First: first, Second: second, Word: list.Word(passphrase.Index(first, second))}
-		}
-		var lines []string
-		for second := 1; second <= half; second++ {
-			p.Rows = append(p.Rows, entryPair{Left: entryAt(second), Right: entryAt(second + half)})
-		}
-		for second := 1; second <= setLarge; second++ {
-			lines = append(lines, fmt.Sprintf("%02d-%02d %s", first, second, entryAt(second).Word))
-		}
-		pages = append(pages, page{Hash: dataHash(lines), Data: p})
-	}
-	return numberPages(pages)
 }
 
 // mapCell is one character of the password map. NameKey is the locale key of a symbol's name, or empty.
@@ -178,7 +106,7 @@ func passwordMapPage() []page {
 		cells = append(cells, cell)
 		lines = append(lines, fmt.Sprintf("%02d %s %s", cell.N, cell.Char, cell.Class))
 	}
-	return numberPages([]page{{Hash: dataHash(lines), Data: cells}})
+	return numberPages([]page{{Hashes: []string{dataHash(lines)}, Data: cells}})
 }
 
 // block is one row of the word-24 block table.

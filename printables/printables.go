@@ -30,11 +30,11 @@ var (
 	fontText []byte
 )
 
-// DefaultTokenMM is the default token diameter of the inventory and cut-out sheets.
-const DefaultTokenMM = 25.0
+// DefaultChipMM is the default chip diameter of the inventory and cut-out sheets.
+const DefaultChipMM = 25.0
 
-// tokenFontRatio is the height of a token number relative to the token diameter.
-const tokenFontRatio = 0.36
+// chipFontRatio is the height of a chip number relative to the chip diameter.
+const chipFontRatio = 0.36
 
 // split divides xs into n consecutive parts of nearly equal length.
 func split(xs []int, n int) [][]int {
@@ -48,8 +48,9 @@ func split(xs []int, n int) [][]int {
 
 // Options configure a rendering.
 type Options struct {
-	Version string  // release version shown on every page
-	TokenMM float64 // token diameter in millimetres
+	Version     string  // release version shown on every page
+	ChipMM      float64 // chip diameter in millimetres
+	LayoutCheck bool    // add a script that reports overflowing boxes (for tools/check_layout.py only, never shipped)
 }
 
 // File is one rendered printable.
@@ -60,10 +61,10 @@ type File struct {
 	Pages []PageInfo
 }
 
-// PageInfo is the data hash of one page, empty for pages without data.
+// PageInfo lists the data hashes printed on one A4 page, in document order.
 type PageInfo struct {
-	Number int    `json:"number"`
-	Hash   string `json:"data_hash,omitempty"`
+	Number int      `json:"number"`
+	Hashes []string `json:"data_hashes,omitempty"`
 }
 
 // Languages lists the printable languages.
@@ -78,11 +79,19 @@ type document struct {
 	Sub       string // locale key of the page subtitle
 	Landscape bool
 	Calibrate bool
+	Booklet   string // "seed" or "passphrase" for booklets, empty otherwise
+	Check     bool   // include the layout-check script
 	Version   string
 	IDs       []string
 	Style     template.CSS
 	Pages     []page
 	Extra     any
+}
+
+// halfContext gives a booklet page access to its document.
+type halfContext struct {
+	Doc  *document
+	Half a5
 }
 
 // pageContext gives the shared page header and footer access to the document and the page.
@@ -132,7 +141,8 @@ func templates(lang string, texts map[string]string) (*template.Template, error)
 		},
 		"mm":       func(x float64) template.CSS { return template.CSS(fmt.Sprintf("%.2fmm", x)) }, //nolint:gosec // G203: number only
 		"ctx":      func(d *document, p page) pageContext { return pageContext{Doc: d, Page: p} },
-		"fontSize": func(diameter float64) float64 { return diameter * tokenFontRatio },
+		"half":     func(d *document, h a5) halfContext { return halfContext{Doc: d, Half: h} },
+		"fontSize": func(diameter float64) float64 { return diameter * chipFontRatio },
 		"split":    split,
 		"desc":     func(title string) string { return strings.Replace(title, "title_", "desc_", 1) },
 	}
@@ -161,7 +171,7 @@ func Render(lang string, opts Options) ([]File, error) {
 		}
 		f := File{Lang: lang, Name: d.Name + ".html", HTML: buf.Bytes()}
 		for _, p := range d.Pages {
-			f.Pages = append(f.Pages, PageInfo{Number: p.Number, Hash: p.Hash})
+			f.Pages = append(f.Pages, PageInfo{Number: p.Number, Hashes: p.Hashes})
 		}
 		files = append(files, f)
 	}
@@ -170,7 +180,7 @@ func Render(lang string, opts Options) ([]File, error) {
 
 // documents builds the data of every printable (SPEC.md section 9).
 func documents(lang string, opts Options) ([]*document, error) {
-	tokens, grid, err := tokenPages(opts.TokenMM)
+	chips, grid, err := chipPages(opts.ChipMM)
 	if err != nil {
 		return nil, err
 	}
@@ -178,37 +188,50 @@ func documents(lang string, opts Options) ([]*document, error) {
 	de, _ := wordlists.Passphrase("de")
 	blockRows, blockLines := blocks()
 	single := numberPages([]page{{}})
+	seedPages, err := seedBooklet()
+	if err != nil {
+		return nil, err
+	}
+	ppStrength := strengthRows([]int{4, 5, 6, 7, 8}, passphrase.Bits)
+	enPages, err := passphraseBooklet(en, ppStrength)
+	if err != nil {
+		return nil, err
+	}
+	dePages, err := passphraseBooklet(de, ppStrength)
+	if err != nil {
+		return nil, err
+	}
 	seedIDs := []string{bip39.ID, wordlists.BIP39EnglishID}
 	docs := []*document{
 		{Name: "quick-reference", Template: "quick", Title: "title_quick", Sub: "print_portrait", Pages: single},
-		{Name: "token-inventory", Template: "tokens", Title: "title_inventory", Sub: "inventory_instruction",
-			Landscape: true, Calibrate: true, Pages: tokens, Extra: map[string]any{"Class": "inventory", "Grid": grid}},
-		{Name: "token-cutout", Template: "tokens", Title: "title_cutout", Sub: "cutout_instruction",
-			Landscape: true, Calibrate: true, Pages: tokens, Extra: map[string]any{"Class": "cutout", "Grid": grid}},
-		{Name: "seed-booklet", Template: "seed-booklet", Title: "title_seed_booklet", Sub: "seed_booklet_sub",
-			Landscape: true, IDs: seedIDs, Pages: seedBookletPages()},
+		{Name: "chip-inventory", Template: "chips", Title: "title_inventory", Sub: "inventory_instruction",
+			Landscape: true, Calibrate: true, Pages: chips, Extra: map[string]any{"Class": "inventory", "Grid": grid}},
+		{Name: "chip-cutout", Template: "chips", Title: "title_cutout", Sub: "cutout_instruction",
+			Landscape: true, Calibrate: true, Pages: chips, Extra: map[string]any{"Class": "cutout", "Grid": grid}},
+		{Name: "seed-booklet", Template: "booklet", Title: "title_seed_booklet", Sub: "seed_booklet_sub",
+			Landscape: true, Booklet: "seed", IDs: seedIDs, Pages: seedPages},
 		{Name: "seed-record", Template: "seed-record", Title: "title_seed_record", Sub: "print_portrait",
 			IDs: seedIDs, Pages: single, Extra: rows(bip39.Draws / 2)},
 		{Name: "seed-reference", Template: "seed-reference", Title: "title_seed_reference", Sub: "print_portrait",
-			IDs: seedIDs, Pages: numberPages([]page{{Hash: dataHash(blockLines)}}), Extra: blockRows},
+			IDs: seedIDs, Pages: numberPages([]page{{Hashes: []string{dataHash(blockLines)}}}), Extra: blockRows},
 		{Name: "password-map", Template: "password-map", Title: "title_password_map", Sub: "map_sub",
 			IDs: []string{password.ID}, Pages: passwordMapPage()},
 		{Name: "password-record", Template: "password-record", Title: "title_password_record", Sub: "print_portrait",
 			IDs: []string{password.ID}, Pages: single,
 			Extra: map[string]any{"Rows": rows(32), "Strength": strengthRows([]int{8, 12, 16, 20, 24}, password.Bits)}},
-		{Name: "passphrase-booklet-en", Template: "passphrase-booklet", Title: "title_passphrase_booklet", Sub: "pp_booklet_sub",
-			IDs: []string{passphrase.ID, en.ID}, Pages: passphraseBookletPages(en), Extra: en.ID},
-		{Name: "passphrase-booklet-de", Template: "passphrase-booklet", Title: "title_passphrase_booklet", Sub: "pp_booklet_sub",
-			IDs: []string{passphrase.ID, de.ID}, Pages: passphraseBookletPages(de), Extra: de.ID},
+		{Name: "passphrase-booklet-en", Template: "booklet", Title: "title_passphrase_booklet", Sub: "pp_booklet_sub",
+			Landscape: true, Booklet: "passphrase", IDs: []string{passphrase.ID, en.ID}, Pages: enPages, Extra: en.ID},
+		{Name: "passphrase-booklet-de", Template: "booklet", Title: "title_passphrase_booklet", Sub: "pp_booklet_sub",
+			Landscape: true, Booklet: "passphrase", IDs: []string{passphrase.ID, de.ID}, Pages: dePages, Extra: de.ID},
 		{Name: "passphrase-record", Template: "passphrase-record", Title: "title_passphrase_record", Sub: "print_portrait",
 			IDs: []string{passphrase.ID}, Pages: single, Extra: map[string]any{"Rows": rows(10), "Lists": []string{en.ID, de.ID},
-				"Strength": strengthRows([]int{4, 5, 6, 7, 8}, passphrase.Bits)}},
+				"Strength": ppStrength}},
 	}
 	docs = append([]*document{{Name: "index", Template: "index", Title: "title_index", Sub: "print_portrait",
 		Pages: single, Extra: docs}}, docs...)
 	css := style()
 	for _, d := range docs {
-		d.Lang, d.Version, d.Style = lang, opts.Version, css
+		d.Lang, d.Version, d.Style, d.Check = lang, opts.Version, css, opts.LayoutCheck
 	}
 	return docs, nil
 }

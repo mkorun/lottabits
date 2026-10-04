@@ -2,7 +2,7 @@
 
 Rules for every agent (and human) working in this repository. `CLAUDE.md` imports this file.
 
-LottaBits is a small, auditable human interface to physical randomness: numbered tokens in one bag create
+LottaBits is a small, auditable human interface to physical randomness: numbered chips in one bag create
 BIP39 seeds, passwords and passphrases; software only calculates deterministically where mathematics requires it.
 Paper first: the printables are a primary interface, not decorative assets.
 
@@ -36,7 +36,8 @@ Paper first: the printables are a primary interface, not decorative assets.
   standard library only, `go vet`, `golangci-lint` (including the `depguard` import bans in `.golangci.yml`), `go test -race`,
   `tools/crosscheck.py verify` (Python standard library only), and on the compiled binary `lottabits selftest` plus
   `tools/crosscheck.py cli` (end-to-end comparison of the CLI output with the independent implementation).
-  The gate also generates the printables and checks them with `tools/check_printables.py`; `mise run pdf` renders PDFs.
+  The gate also generates the printables and checks them with `tools/check_printables.py`. Layout overflow needs Chrome:
+  `mise run layout` (also a CI job); `mise run pdf` renders PDFs. Look at rendered pages after every layout change.
   CI adds `govulncheck`; `scripts/pre-push.sh` and CI add `gitleaks`. The gate must pass before every commit.
   A rule is either checked automatically or dropped.
 - Mappings are tested exhaustively (all 4096 seed draw pairs, all 88 password draws, all 7744 passphrase coordinates).

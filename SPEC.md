@@ -3,7 +3,7 @@
 Status: draft for v1. This document is normative. The CLI, the printables and the tests implement exactly these rules.
 The key words MUST, MUST NOT, SHOULD and MAY are used as described in RFC 2119.
 
-LottaBits is not a new cryptographic primitive. It is a human interface to physical randomness: numbered tokens drawn from
+LottaBits is not a new cryptographic primitive. It is a human interface to physical randomness: numbered chips drawn from
 one bag create secrets; software only calculates where mathematics requires it.
 
 ## 1. Versioned identifiers
@@ -21,9 +21,9 @@ identifier; an existing identifier never changes its meaning. Release versions (
 
 ## 2. Terms
 
-- **Token:** a physical marker showing one number. The full set holds tokens `01` to `88`.
-- **Set 64:** tokens `01`–`64`. **Set 88:** tokens `01`–`88`.
-- **Draw:** taking one token blindly from the bag, recording its number, putting it back and mixing. A draw is an integer.
+- **Chip:** a physical marker showing one number. The full set holds chips `01` to `88`.
+- **Set 64:** chips `01`–`64`. **Set 88:** chips `01`–`88`.
+- **Draw:** taking one chip blindly from the bag, recording its number, putting it back and mixing. A draw is an integer.
 - **Number:** a 1-based position as printed for humans (BIP39 word number `1`–`2048`, password character `1`–`88`).
 - **Index:** the 0-based position used in calculations. `index = number − 1`. Printables and CLI output show numbers, never indexes.
 - **Pair:** two consecutive draws, the **first draw** `a` and the **second draw** `b`.
@@ -34,16 +34,16 @@ Draws are written with two digits (`01`, `09`, `64`, `88`).
 
 This procedure applies to all modes. Printables and documentation MUST describe it.
 
-1. Use tokens that differ only in their printed number: same shape, size, weight, material and surface. Tokens `65`–`88`
+1. Use chips that differ only in their printed number: same shape, size, weight, material and surface. Chips `65`–`88`
    MAY be visually distinct (for example another colour) so the two sets can share one bag and be separated easily.
-2. Before each session, lay all tokens of the set onto the inventory sheet and confirm that every number is present exactly once.
-3. Seed mode uses set 64: tokens `65`–`88` MUST be removed from the bag. Password and passphrase modes use set 88.
-4. For every draw: mix thoroughly, draw one token without looking, record its number, put it back. Draws are always
+2. Before each session, lay all chips of the set onto the inventory sheet and confirm that every number is present exactly once.
+3. Seed mode uses set 64: chips `65`–`88` MUST be removed from the bag. Password and passphrase modes use set 88.
+4. For every draw: mix thoroughly, draw one chip without looking, record its number, put it back. Draws are always
    **with replacement**.
 5. Draw unobserved: no cameras, no onlookers, no recording devices in view.
 
 Under these conditions every draw is independent and uniformly distributed over the set. LottaBits makes no claim beyond that;
-it does not claim that tokens are more random than fair dice.
+it does not claim that chips are more random than fair dice.
 
 ## 4. Seed: `lottabits-seed-v1`
 
@@ -218,7 +218,7 @@ Common rules for all commands:
 - **Input:** exactly 46 draws in `1..64`.
 - **Output:** for each of the 24 words its position, the pair (none for word 24), the word number (four digits) and the word;
   then the extra bits with the block and its number range, a hint for hardware wallets (section 4.5), and the lines
-  `Entropy source: 46 token draws` and `Software-generated randomness: none`.
+  `Entropy source: 46 chip draws` and `Software-generated randomness: none`.
 - **Flag** `--details`: additionally prints the entropy (hexadecimal) and the checksum byte, for cross-verification.
 - **Errors:** fewer or more than 46 draws, a draw outside `1..64`.
 
@@ -236,7 +236,7 @@ LottaBits seed (lottabits-seed-v1)
 
 Extra bits: 000 -> block 0, word numbers 1–256
 Hardware wallet: pick the final word numbered 1–256, or enter the extra bits 000 in this order.
-Entropy source: 46 token draws
+Entropy source: 46 chip draws
 Software-generated randomness: none
 ```
 
@@ -281,45 +281,54 @@ Every printable MUST:
 - fit A4 portrait or landscape and print legibly in black and white,
 - use no external fonts, scripts, style sheets or network resources (fonts are embedded, see ADR 0003),
 - show the release version and the identifiers of the data it contains on every page,
-- show token numbers with two digits and underlined (so `06`/`90`, `16`/`91`, `18`/`81`, `19`/`61`, `68`/`89` cannot be
-  confused when rotated) and mark tokens `65`–`88` with a distinct black-and-white feature (double ring).
+- show chip numbers with two digits and underlined (so `06`/`90`, `16`/`91`, `18`/`81`, `19`/`61`, `68`/`89` cannot be
+  confused when rotated) and mark chips `65`–`88` with a distinct black-and-white feature (double ring).
 
 Required printables, each in English and German:
 
 | Printable | Content |
 |---|---|
-| Inventory sheet | one circle per token `01`–`88` at token size (default 25 mm, configurable) for the completeness check |
-| Cut-out tokens | tokens `01`–`88` to cut from card stock; documented as a low-assurance option |
-| Seed booklet | section 4.5: 32 groups of 64 entries, two groups (A5 halves) per A4 landscape page in reading order, 16 pages, printable single-sided |
+| Inventory sheet | one circle per chip `01`–`88` at chip size (default 25 mm, configurable) for the completeness check |
+| Cut-out chips | chips `01`–`88` to cut from card stock; documented as a low-assurance option |
+| Seed booklet | section 4.5: one A5 page per group (page `n` = first draws `n` and `n+32`, 64 entries), 32 pages plus a cover sheet, imposed as a saddle-stitched booklet (see 9.3) |
 | Seed record sheet | 23 rows: draws, word number, word, extra bit (rows 1–3); row 24 with the block |
 | Seed quick reference | extra bits → block → number range (table of 4.4), first and last word of each block |
 | Password character map | section 5.1 with numbers, classes, unambiguous glyphs and symbol names |
 | Password record sheet | rows with draw number, character and class |
-| Passphrase booklet | 7744 words in coordinate order, one page per first draw (88 pages), one booklet per word-list identifier |
+| Passphrase booklet | one A5 page per first draw (page `n` = first draw `n`, 88 entries in three columns), 88 pages plus a cover sheet, imposed as in 9.3; one booklet per word-list identifier |
 | Passphrase record sheet | rows with both draws, coordinate and word, plus the word-list identifier |
 | Quick reference | one page: procedure of section 3 and the three modes |
 | Index | the list of printables with their purpose and printing instructions |
 
-Token sheets carry a 50 mm calibration line so that the user can check that the print was not scaled.
+Chip sheets carry a 50 mm calibration line so that the user can check that the print was not scaled.
 
 ### 9.1 Data hash
-Pages that carry data (seed booklet, seed quick reference, password character map, passphrase booklets) show a data hash:
+Pages that carry data show a data hash; in booklets every A5 page with data shows its own:
 the first 16 hexadecimal digits of SHA-256 over the page's data lines, each terminated by `LF`, written in groups of four.
 The data lines are, in this order:
 
 | Printable | One line per entry |
 |---|---|
-| Seed booklet | `AA BB NNNN word` for each group on the page (first draw `AA` from `01` to `32`), second draws `BB` from `01` to `64` |
-| Seed quick reference | `bits block NNNN-NNNN first last` for blocks 0 to 7 |
+| Seed booklet page | `AA BB NNNN word` for the page's first draw `AA` (`01` to `32`) and second draws `BB` from `01` to `64` |
+| Seed quick reference, inside back cover of the seed booklet | `bits block NNNN-NNNN first last` for blocks 0 to 7 |
 | Password character map | `NN c K` (number, character, class) for numbers `01` to `88` |
-| Passphrase booklet | `AA-BB word` for second draws `BB` from `01` to `88` |
+| Passphrase booklet page | `AA-BB word` for the page's first draw `AA` and second draws `BB` from `01` to `88` |
 
 ### 9.2 Generation and checks
 `go run ./cmd/printables -out DIR` writes `DIR/en/*.html`, `DIR/de/*.html` and `DIR/manifest.json` (SHA-256 of every file
 and the data hash of every page). `tools/check_printables.py DIR` reads the visible entries of the generated files, recomputes
 every mapping and data hash independently, compares them with the manifest and checks that both languages print identical
-data. `tools/render_pdfs.py DIR PDF_DIR` renders PDFs with headless Chrome and fails if a document has more pages than its
-manifest lists (overflow). The HTML files are canonical; PDFs are a convenience and not byte-reproducible.
+data, and checks the imposition of both booklets. `go run ./cmd/printables -layout-check -out DIR` adds a measuring script
+(never shipped) with which `tools/check_layout.py DIR` fails on any box whose content overflows (clipped text, a header
+wrapping into the content). `tools/render_pdfs.py DIR PDF_DIR` renders PDFs with headless Chrome and fails if a document has
+more pages than its manifest lists. The HTML files are canonical; PDFs are a convenience and not byte-reproducible.
+
+### 9.3 Booklets
+Booklets are A5 pages printed two per A4 landscape side, double-sided with flip on the short edge, then stacked, folded in
+the middle and stapled on the fold. The first sheet is the cover: its front carries the back cover (left) and the front
+cover (right), its back the inside front cover (left, instructions) and the inside back cover (right; for the seed booklet the
+block table of 4.4, for passphrase booklets the strength table). For `n` content pages (`n` a multiple of 4) sheet `i`
+(from 0) carries pages `n−2i` and `2i+1` on its front and `2i+2` and `n−2i−1` on its back.
 
 ## 10. Test vectors
 

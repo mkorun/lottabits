@@ -1,19 +1,3 @@
-{{define "seed-booklet"}}{{template "head" .}}{{range .Pages}}{{template "pagestart" (ctx $ .)}}
-<div class="halves booklet">
-{{range .Data}}<div class="half">
-<h2><span class="first"><u>{{two .Low}}</u> / <u>{{two .High}}</u></span><span class="bits">{{t "first_draw"}}: <u>{{two .Low}}</u> → {{t "extra_bit"}} 0 · <u>{{two .High}}</u> → {{t "extra_bit"}} 1</span></h2>
-<table>
-<thead><tr><th>{{t "col_second"}}</th><th>{{t "col_number"}}</th><th>{{t "col_word"}}</th><th class="sep"></th><th>{{t "col_second"}}</th><th>{{t "col_number"}}</th><th>{{t "col_word"}}</th></tr></thead>
-<tbody>
-{{range $i, $r := .Rows}}<tr{{if odd $i}} class="shade"{{end}}>{{template "seed-entry" $r.Left}}<td class="sep"></td>{{template "seed-entry" $r.Right}}</tr>
-{{end}}</tbody>
-</table>
-</div>
-{{end}}</div>
-{{template "pageend" (ctx $ .)}}{{end}}{{template "tail"}}{{end}}
-
-{{define "seed-entry"}}<td class="b"><u>{{two .Second}}</u></td><td class="n">{{four .Number}}</td><td class="w">{{.Word}}</td>{{end}}
-
 {{define "seed-record"}}{{template "head" .}}{{range .Pages}}{{template "pagestart" (ctx $ .)}}
 <ol class="steps"><li>{{t "seed_step_1"}}</li><li>{{t "seed_step_2"}}</li><li>{{t "seed_step_3"}}</li><li>{{t "seed_step_4"}}</li></ol>
 <table class="record">
@@ -32,12 +16,7 @@
 <h2>{{t "ref_procedure"}}</h2><p>{{t "ref_procedure_text"}}</p>
 <h2>{{t "ref_first_draw"}}</h2><p>{{t "ref_first_draw_text"}}</p>
 <h2>{{t "ref_blocks"}}</h2>
-<table class="blocks">
-<thead><tr><th>{{t "col_bits"}}</th><th>{{t "col_block"}}</th><th>{{t "col_numbers"}}</th><th>{{t "col_first_word"}}</th><th>{{t "col_last_word"}}</th></tr></thead>
-<tbody>
-{{range $.Extra}}<tr class="block"><td class="bits">{{.Bits}}</td><td>{{.Block}}</td><td class="range">{{four .From}}–{{four .To}}</td><td class="w">{{.FirstWord}}</td><td class="w">{{.LastWord}}</td></tr>
-{{end}}</tbody>
-</table>
+{{template "block-table" $.Extra}}
 <h2>{{t "ref_word24"}}</h2>
 <ol class="steps"><li>{{t "ref_w24_a"}}</li><li>{{t "ref_w24_b"}}</li><li>{{t "ref_w24_c"}}</li></ol>
 <p class="warn">{{t "ref_never_position"}}</p>

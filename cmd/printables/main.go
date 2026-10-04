@@ -23,23 +23,25 @@ type manifestFile struct {
 
 type manifest struct {
 	Version string         `json:"version"`
-	TokenMM float64        `json:"token_mm"`
+	ChipMM  float64        `json:"chip_mm"`
 	Files   []manifestFile `json:"files"`
 }
 
 func main() {
 	out := flag.String("out", "dist/printables", "output directory")
 	version := flag.String("version", "dev", "release version shown on every page")
-	tokenMM := flag.Float64("token-mm", printables.DefaultTokenMM, "token diameter in millimetres")
+	chipMM := flag.Float64("chip-mm", printables.DefaultChipMM, "chip diameter in millimetres")
+	layoutCheck := flag.Bool("layout-check", false, "add the layout-check script (for tools/check_layout.py; never ship this output)")
 	flag.Parse()
-	if err := write(*out, printables.Options{Version: *version, TokenMM: *tokenMM}); err != nil {
+	opts := printables.Options{Version: *version, ChipMM: *chipMM, LayoutCheck: *layoutCheck}
+	if err := write(*out, opts); err != nil {
 		fmt.Fprintln(os.Stderr, "printables:", err)
 		os.Exit(1)
 	}
 }
 
 func write(out string, opts printables.Options) error {
-	m := manifest{Version: opts.Version, TokenMM: opts.TokenMM}
+	m := manifest{Version: opts.Version, ChipMM: opts.ChipMM}
 	for _, lang := range printables.Languages() {
 		files, err := printables.Render(lang, opts)
 		if err != nil {

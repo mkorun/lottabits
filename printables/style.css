@@ -15,7 +15,7 @@ body {
   line-height: 1.3;
   background: #ccc;
 }
-.mono, td, .cell .glyph, .token { font-family: "LB Mono", monospace; }
+.mono, td, .cell .glyph, .chip { font-family: "LB Mono", monospace; }
 u { text-decoration-thickness: 0.2mm; text-underline-offset: 0.6mm; }
 
 @page { size: A4 portrait; margin: 0; }
@@ -45,16 +45,16 @@ u { text-decoration-thickness: 0.2mm; text-underline-offset: 0.6mm; }
 .body { flex: 1; padding-top: 2mm; overflow: hidden; }
 .calibration { display: inline-block; width: 50mm; border-top: 0.4mm solid #000; vertical-align: middle; margin: 0 2mm; }
 
-/* token grids (inventory and cut-out) */
-.tokens { display: grid; gap: 1.5mm; padding-top: 0; }
-.token {
+/* chip grids (inventory and cut-out) */
+.chips { display: grid; gap: 1.5mm; padding-top: 0; }
+.chip {
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
   font-weight: 700; position: relative;
 }
-.inventory .token { border: 0.3mm dashed #777; color: #888; }
-.cutout .token { border: 0.3mm solid #000; }
-.token.high { box-shadow: 0 0 0 0.6mm #fff inset, 0 0 0 1.2mm #000 inset; }
-.inventory .token.high { box-shadow: 0 0 0 0.6mm #fff inset, 0 0 0 1mm #777 inset; }
+.inventory .chip { border: 0.3mm dashed #777; color: #888; }
+.cutout .chip { border: 0.3mm solid #000; }
+.chip.high { box-shadow: 0 0 0 0.6mm #fff inset, 0 0 0 1.2mm #000 inset; }
+.inventory .chip.high { box-shadow: 0 0 0 0.6mm #fff inset, 0 0 0 1mm #777 inset; }
 
 /* tables */
 table { border-collapse: collapse; width: 100%; }
@@ -65,17 +65,26 @@ td.b { width: 9mm; font-weight: 700; }
 td.n { width: 13mm; color: var(--muted); }
 td.sep { width: 4mm; border-left: var(--thin); }
 
-/* seed booklet: two A5 halves per landscape sheet */
-.halves { display: flex; gap: 8mm; height: 100%; }
-.half { flex: 1; display: flex; flex-direction: column; }
-.half h2 { margin: 0 0 1mm 0; font-size: 16pt; display: flex; justify-content: space-between; align-items: baseline; }
-.half h2 .bits { font-size: 8pt; font-weight: 400; color: var(--muted); }
-.booklet td { height: 5.05mm; font-size: 9.5pt; }
+/* booklets: two A5 pages per A4 landscape side, imposed for saddle stitching */
+.page.sheet { padding: 0; flex-direction: row; }
+.a5 { width: 148.5mm; height: 210mm; padding: 7mm 9mm 5mm 9mm; display: flex; flex-direction: column; overflow: hidden; }
+.a5head { height: 5mm; display: flex; justify-content: space-between; align-items: baseline; font-size: 7.5pt; color: var(--muted); border-bottom: var(--thin); }
+.a5body { flex: 1; overflow: hidden; padding-top: 1.5mm; }
+.a5foot { height: 4.5mm; display: flex; justify-content: space-between; align-items: flex-end; font-size: 6.5pt; color: var(--muted); border-top: var(--thin); }
+.a5 h2 { margin: 0 0 1mm 0; font-size: 15pt; display: flex; justify-content: space-between; align-items: baseline; }
+.a5 h2 .bits { font-size: 7.5pt; font-weight: 400; color: var(--muted); }
+.entries td { height: 4.95mm; font-size: 9pt; }
+.entries.pp td { height: 5.3mm; font-size: 8.5pt; }
+.entries.pp td.b { width: 7mm; }
+.cover-front { display: flex; flex-direction: column; justify-content: center; text-align: center; }
+.cover-front .brand { font-size: 13pt; letter-spacing: 0.3em; margin: 0; }
+.cover-front h1 { font-size: 26pt; margin: 4mm 0; }
+.cover-front .subtitle { font-size: 11pt; }
+.cover-front .claim { margin-top: 20mm; font-size: 9pt; color: var(--muted); }
 
-/* passphrase booklet */
-.ppage h2 { margin: 0 0 1mm 0; font-size: 16pt; display: flex; justify-content: space-between; align-items: baseline; }
-.ppage h2 .sub { font-size: 8pt; font-weight: 400; color: var(--muted); }
-.ppage td { height: 5.5mm; font-size: 10pt; }
+/* two side-by-side tables on a record sheet */
+.twocol { display: flex; gap: 8mm; }
+.twocol > table { flex: 1; }
 
 /* record sheets */
 .record td { height: 9mm; border-bottom: var(--thin); }

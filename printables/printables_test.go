@@ -19,7 +19,7 @@ import (
 
 func render(t *testing.T, lang string) map[string]File {
 	t.Helper()
-	files, err := Render(lang, Options{Version: "v-test", TokenMM: DefaultTokenMM})
+	files, err := Render(lang, Options{Version: "v-test", ChipMM: DefaultChipMM})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -32,11 +32,11 @@ func render(t *testing.T, lang string) map[string]File {
 
 var (
 	seedEntryRE = regexp.MustCompile(`<td class="b"><u>(\d\d)</u></td><td class="n">(\d{4})</td><td class="w">([a-z]+)</td>`)
-	ppEntryRE   = regexp.MustCompile(`<td class="b"><u>(\d\d)</u>-<u>(\d\d)</u></td><td class="w">([a-z-]+)</td>`)
+	ppEntryRE   = regexp.MustCompile(`<td class="b"><u>(\d\d)</u></td><td class="w">([a-z-]+)</td>`)
+	ppFirstRE   = regexp.MustCompile(`<u class="first">(\d\d)</u>`)
 	cellRE      = regexp.MustCompile(`<span class="n"><u>(\d\d)</u></span><span class="k">([DULS])</span><span class="glyph">(.*?)</span>`)
-	tokenRE     = regexp.MustCompile(`<div class="token( high)?"[^>]*><u>(\d\d)</u></div>`)
+	chipRE      = regexp.MustCompile(`<div class="chip( high)?"[^>]*><u>(\d\d)</u></div>`)
 	hashRE      = regexp.MustCompile(`<span class="hash">([0-9a-f ]+)</span>`)
-	footRE      = regexp.MustCompile(`<footer class="foot"><span>LottaBits v-test`)
 	externalRE  = regexp.MustCompile(`(?i)(src|href)\s*=\s*"(https?:|//)|url\(\s*["']?(https?:|//)|<script|<link`)
 )
 
@@ -62,9 +62,7 @@ func TestNoExternalResourcesAndVersionOnEveryPage(t *testing.T) {
 			if externalRE.MatchString(text) {
 				t.Errorf("%s/%s references an external resource or script", lang, name)
 			}
-			if got := len(footRE.FindAllString(text, -1)); got != len(f.Pages) || got == 0 {
-				t.Errorf("%s/%s: version in %d footers, %d pages", lang, name, got, len(f.Pages))
-			}
+			checkPageVersions(t, lang+"/"+name, text, len(f.Pages))
 			if got, want := printedHashes(text), pageHashes(f); !slices.Equal(got, want) {
 				t.Errorf("%s/%s: printed hashes %v, page data %v", lang, name, got, want)
 			}
@@ -83,9 +81,7 @@ func printedHashes(text string) []string {
 func pageHashes(f File) []string {
 	var out []string
 	for _, p := range f.Pages {
-		if p.Hash != "" {
-			out = append(out, p.Hash)
-		}
+		out = append(out, p.Hashes...)
 	}
 	return out
 }
@@ -104,7 +100,7 @@ func TestSeedBookletEntries(t *testing.T) {
 		for _, m := range matches {
 			second, _ := strconv.Atoi(m[1])
 			number, _ := strconv.Atoi(m[2])
-			if seen[number] || list.Word(number-1) != m[3] || (number-1)%bip39.Tokens != second-1 {
+			if seen[number] || list.Word(number-1) != m[3] || (number-1)%bip39.Chips != second-1 {
 				t.Fatalf("%s: entry %v is wrong or repeated", lang, m[1:])
 			}
 			seen[number] = true
@@ -121,16 +117,12 @@ func TestPassphraseBookletEntries(t *testing.T) {
 		files := render(t, lang)
 		for _, name := range wordlists.PassphraseNames() {
 			list, _ := wordlists.Passphrase(name)
-			matches := ppEntryRE.FindAllStringSubmatch(string(files["passphrase-booklet-"+name+".html"].HTML), -1)
-			if len(matches) != 7744 {
-				t.Fatalf("%s/%s: %d entries, want 7744", lang, name, len(matches))
+			pages := strings.Split(string(files["passphrase-booklet-"+name+".html"].HTML), `<div class="a5 content">`)[1:]
+			if len(pages) != 88 {
+				t.Fatalf("%s/%s: %d content pages, want 88", lang, name, len(pages))
 			}
-			for _, m := range matches {
-				first, _ := strconv.Atoi(m[1])
-				second, _ := strconv.Atoi(m[2])
-				if list.Word((first-1)*88+second-1) != m[3] {
-					t.Fatalf("%s/%s: %s-%s %q is wrong", lang, name, m[1], m[2], m[3])
-				}
+			for _, p := range pages {
+				checkPassphrasePage(t, lang+"/"+name, p, list)
 			}
 		}
 	}
@@ -158,40 +150,40 @@ func TestPasswordMap(t *testing.T) {
 	}
 }
 
-func TestTokenSheets(t *testing.T) {
-	for _, name := range []string{"token-inventory.html", "token-cutout.html"} {
-		matches := tokenRE.FindAllStringSubmatch(string(render(t, "en")[name].HTML), -1)
+func TestChipSheets(t *testing.T) {
+	for _, name := range []string{"chip-inventory.html", "chip-cutout.html"} {
+		matches := chipRE.FindAllStringSubmatch(string(render(t, "en")[name].HTML), -1)
 		if len(matches) != 88 {
-			t.Fatalf("%s: %d tokens, want 88", name, len(matches))
+			t.Fatalf("%s: %d chips, want 88", name, len(matches))
 		}
 		for i, m := range matches {
 			if m[2] != fmt.Sprintf("%02d", i+1) || (m[1] != "") != (i+1 > 64) {
-				t.Errorf("%s: token %d rendered as %q high=%q", name, i+1, m[2], m[1])
+				t.Errorf("%s: chip %d rendered as %q high=%q", name, i+1, m[2], m[1])
 			}
 		}
 	}
 }
 
-func TestTokenDiameterOption(t *testing.T) {
+func TestChipDiameterOption(t *testing.T) {
 	for _, mm := range []float64{20, 30, 40} {
-		pages, _, err := tokenPages(mm)
+		pages, _, err := chipPages(mm)
 		if err != nil {
 			t.Fatalf("%v mm: %v", mm, err)
 		}
 		n := 0
 		for _, p := range pages {
-			tokens := p.Data.([]token)
-			if tokens[0].N != 1 && tokens[0].N != 65 && tokens[0].High != tokens[len(tokens)-1].High {
-				t.Errorf("%v mm: page mixes token sets", mm)
+			chips := p.Data.([]chip)
+			if chips[0].N != 1 && chips[0].N != 65 && chips[0].High != chips[len(chips)-1].High {
+				t.Errorf("%v mm: page mixes chip sets", mm)
 			}
-			n += len(tokens)
+			n += len(chips)
 		}
 		if n != 88 {
-			t.Errorf("%v mm: %d tokens", mm, n)
+			t.Errorf("%v mm: %d chips", mm, n)
 		}
 	}
-	if _, err := Render("en", Options{TokenMM: 250}); err == nil {
-		t.Error("a 250 mm token must be rejected")
+	if _, err := Render("en", Options{ChipMM: 250}); err == nil {
+		t.Error("a 250 mm chip must be rejected")
 	}
 }
 
@@ -207,7 +199,7 @@ func TestBlockTable(t *testing.T) {
 }
 
 func TestUnknownLanguage(t *testing.T) {
-	if _, err := Render("fr", Options{TokenMM: DefaultTokenMM}); err == nil {
+	if _, err := Render("fr", Options{ChipMM: DefaultChipMM}); err == nil {
 		t.Error("unknown language must fail")
 	}
 	data, _ := json.Marshal(PageInfo{Number: 1})
@@ -225,6 +217,82 @@ func TestFontsArePinned(t *testing.T) {
 		font := map[string][]byte{"mono": fontMono, "text": fontText}[name]
 		if got := fmt.Sprintf("%x", sha256.Sum256(font)); got != want {
 			t.Errorf("%s font SHA-256 %s, pinned %s", name, got, want)
+		}
+	}
+}
+
+// Saddle stitching: sheet i carries (n−2i | 2i+1) on the front and (2i+2 | n−2i−1) on the back, as in the prototype.
+func TestImposition(t *testing.T) {
+	if got := impose(32)[:4]; !slices.Equal(got, [][2]int{{32, 1}, {2, 31}, {30, 3}, {4, 29}}) {
+		t.Errorf("first sides of a 32-page booklet: %v", got)
+	}
+	for _, n := range []int{4, 32, 88} {
+		sides := impose(n)
+		seen := map[int]bool{}
+		for i := 0; i < len(sides); i += 2 {
+			sheet := i / 2
+			front, back := sides[i], sides[i+1]
+			if front != [2]int{n - 2*sheet, 2*sheet + 1} || back != [2]int{2*sheet + 2, n - 2*sheet - 1} {
+				t.Fatalf("n=%d sheet %d: front %v back %v", n, sheet, front, back)
+			}
+			for _, p := range [4]int{front[0], front[1], back[0], back[1]} {
+				seen[p] = true
+			}
+		}
+		if len(seen) != n {
+			t.Errorf("n=%d: %d distinct pages", n, len(seen))
+		}
+	}
+	if _, err := booklet(make([]a5, 6), a5{}); err == nil {
+		t.Error("a page count that is not a multiple of 4 must be rejected")
+	}
+}
+
+func TestBookletSizes(t *testing.T) {
+	files := render(t, "en")
+	for name, sides := range map[string]int{"seed-booklet.html": 18, "passphrase-booklet-en.html": 46, "passphrase-booklet-de.html": 46} {
+		if got := len(files[name].Pages); got != sides {
+			t.Errorf("%s: %d A4 sides, want %d (cover sheet plus content)", name, got, sides)
+		}
+	}
+}
+
+func TestLayoutCheckScriptOnlyOnRequest(t *testing.T) {
+	files, err := Render("en", Options{ChipMM: DefaultChipMM, LayoutCheck: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, f := range files {
+		if !strings.Contains(string(f.HTML), `setAttribute("data-layout"`) {
+			t.Errorf("%s: layout-check build lacks the script", f.Name)
+		}
+	}
+}
+
+func checkPageVersions(t *testing.T, label, text string, pages int) {
+	t.Helper()
+	sections := strings.Split(text, `<section class="page`)[1:]
+	if len(sections) != pages || pages == 0 {
+		t.Errorf("%s: %d pages rendered, %d expected", label, len(sections), pages)
+	}
+	for i, section := range sections {
+		if !strings.Contains(section, "LottaBits v-test") {
+			t.Errorf("%s: page %d lacks the version", label, i+1)
+		}
+	}
+}
+
+func checkPassphrasePage(t *testing.T, label, page string, list wordlists.List) {
+	t.Helper()
+	first, _ := strconv.Atoi(ppFirstRE.FindStringSubmatch(page)[1])
+	entries := ppEntryRE.FindAllStringSubmatch(page, -1)
+	if len(entries) != 88 {
+		t.Fatalf("%s page %d: %d entries", label, first, len(entries))
+	}
+	for _, m := range entries {
+		second, _ := strconv.Atoi(m[1])
+		if list.Word((first-1)*88+second-1) != m[2] {
+			t.Fatalf("%s: %02d-%s %q is wrong", label, first, m[1], m[2])
 		}
 	}
 }

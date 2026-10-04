@@ -7,17 +7,30 @@
 <style>
 {{.Style}}
 </style>
-</head>
+{{if .Check}}<script>
+window.addEventListener("load", function () {
+  document.fonts.ready.then(function () {
+    var problems = [];
+    document.querySelectorAll(".page, .a5, .head, .body, .foot, .a5head, .a5body, .a5foot, .cell, .card").forEach(function (el, i) {
+      if (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1) {
+        problems.push(el.className + " #" + i + ": content " + el.scrollWidth + "x" + el.scrollHeight + " px, box " + el.clientWidth + "x" + el.clientHeight + " px");
+      }
+    });
+    document.body.setAttribute("data-layout", problems.length ? problems.join("; ") : "ok");
+  });
+});
+</script>
+{{end}}</head>
 <body class="{{if .Landscape}}landscape{{else}}portrait{{end}}">
 {{end}}
 
 {{define "pagestart"}}<section class="page">
-<header class="head"><h1>{{t .Doc.Title}}</h1><span class="sub">{{t .Doc.Sub}}{{if .Doc.Calibrate}} · {{t "calibration"}}<span class="calibration"></span>{{end}}</span></header>
+<header class="head"><h1>{{t .Doc.Title}}</h1><span class="sub">{{t .Doc.Sub}}</span></header>
 <div class="body">
 {{end}}
 
 {{define "pageend"}}</div>
-<footer class="foot"><span>LottaBits {{.Doc.Version}}{{range .Doc.IDs}} · {{.}}{{end}} · {{t "license"}}</span><span>{{if .Page.Hash}}{{t "data"}} <span class="hash">{{.Page.Hash}}</span> · {{end}}{{t "page"}} {{.Page.Number}}/{{.Page.Total}}</span></footer>
+<footer class="foot"><span>LottaBits {{.Doc.Version}}{{range .Doc.IDs}} · {{.}}{{end}} · {{t "license"}}{{if .Doc.Calibrate}} · {{t "calibration"}}<span class="calibration"></span>{{end}}</span><span>{{range .Page.Hashes}}{{t "data"}} <span class="hash">{{.}}</span> · {{end}}{{t "page"}} {{.Page.Number}}/{{.Page.Total}}</span></footer>
 </section>
 {{end}}
 

@@ -20,11 +20,11 @@ from crosscheck import PASSWORD_ALPHABET, load_wordlist
 SEED_ENTRY = re.compile(r'<td class="b"><u>(\d\d)</u></td><td class="n">(\d{4})</td><td class="w">([a-z]+)</td>')
 SEED_HALF = re.compile(r'<span class="first"><u>(\d\d)</u> / <u>(\d\d)</u></span>')
 PP_FIRST = re.compile(r'<u class="first">(\d\d)</u>')
-PP_ENTRY = re.compile(r'<td class="b"><u>(\d\d)</u>-<u>(\d\d)</u></td><td class="w">([a-z-]+)</td>')
+PP_ENTRY = re.compile(r'<td class="b"><u>(\d\d)</u></td><td class="w">([a-z-]+)</td>')
 CELL = re.compile(r'<span class="n"><u>(\d\d)</u></span><span class="k">([DULS])</span><span class="glyph">(.*?)</span>')
 BLOCK = re.compile(r'<tr class="block"><td class="bits">([01]{3})</td><td>(\d)</td><td class="range">(\d{4})–(\d{4})</td>'
                    r'<td class="w">([a-z]+)</td><td class="w">([a-z]+)</td></tr>')
-TOKEN = re.compile(r'<div class="token( high)?"[^>]*><u>(\d\d)</u></div>')
+CHIP = re.compile(r'<div class="chip( high)?"[^>]*><u>(\d\d)</u></div>')
 HASH = re.compile(r'<span class="hash">([0-9a-f ]+)</span>')
 
 
@@ -44,7 +44,20 @@ class Checker:
         return " ".join(digest[i:i + 4] for i in range(0, 16, 4))
 
     def pages(self, text):
-        return text.split('<section class="page">')[1:]
+        return text.split('<section class="page')[1:]
+
+    @staticmethod
+    def halves(text):
+        """A5 pages of a booklet in document order as (kind, html)."""
+        parts = re.split(r'<div class="a5 ([a-z-]+)">', text)
+        return list(zip(parts[1::2], parts[2::2]))
+
+    def imposition(self, label, numbers, n):
+        """Saddle stitching after a cover sheet: sheet i carries (n-2i | 2i+1) and (2i+2 | n-2i-1)."""
+        expected = []
+        for sheet in range(n // 4):
+            expected += [n - 2 * sheet, 2 * sheet + 1, 2 * sheet + 2, n - 2 * sheet - 1]
+        self.expect(numbers == expected, f"{label}: pages are not imposed for saddle stitching")
 
     def page_hash(self, label, page, lines, printed):
         found = HASH.search(page)
@@ -53,37 +66,48 @@ class Checker:
             printed.append(found.group(1))
 
     def seed_booklet(self, label, text, printed):
-        numbers, data = set(), []
-        for n, page in enumerate(self.pages(text), start=1):
-            halves = SEED_HALF.findall(page)
+        numbers, data, order = set(), [], []
+        halves = self.halves(text)
+        self.expect([k for k, _ in halves[:4]] == ["back", "front", "inside-front", "inside-back"], f"{label}: cover sheet")
+        for kind, page in halves:
+            if kind == "inside-back":
+                self.blocks(f"{label} inside back", page, printed)
+            if kind != "content":
+                continue
+            low, high = (int(x) for x in SEED_HALF.search(page).groups())
             entries = SEED_ENTRY.findall(page)
-            self.expect(len(halves) == 2 and len(entries) == 128, f"{label} page {n}: layout")
+            self.expect(high == low + 32 and len(entries) == 64, f"{label} page {low}: layout")
             lines = []
-            for i, (second, number, word) in enumerate(entries):
-                low, high = (int(x) for x in halves[i // 64])
-                self.expect(high == low + 32, f"{label} page {n}: heading {low}/{high}")
+            for second, number, word in entries:
                 index = ((low - 1) % 32) * 64 + (int(second) - 1)
                 self.expect(int(number) == index + 1 and word == self.bip39[index], f"{label}: {low} {second} {word}")
                 numbers.add(int(number))
-                lines.append((low, int(second), f"{low:02d} {second} {number} {word}"))
-            self.page_hash(f"{label} page {n}", page, [line for *_, line in sorted(lines)], printed)
+                lines.append((int(second), f"{low:02d} {second} {number} {word}"))
+            self.page_hash(f"{label} page {low}", page, [line for _, line in sorted(lines)], printed)
             data.extend(sorted(lines))
+            order.append(low)
         self.expect(numbers == set(range(1, 2049)), f"{label}: not every word number 1–2048 exactly once")
+        self.imposition(label, order, 32)
         return data
 
     def passphrase_booklet(self, label, text, wordlist, printed):
-        data = []
-        for n, page in enumerate(self.pages(text), start=1):
+        data, order = [], []
+        halves = self.halves(text)
+        self.expect([k for k, _ in halves[:4]] == ["back", "front", "inside-front", "inside-back"], f"{label}: cover sheet")
+        for kind, page in halves:
+            if kind != "content":
+                continue
             first = int(PP_FIRST.search(page).group(1))
             entries = PP_ENTRY.findall(page)
-            self.expect(first == n and len(entries) == 88, f"{label} page {n}: layout")
+            self.expect(len(entries) == 88, f"{label} page {first}: layout")
             lines = []
-            for a, b, word in entries:
-                self.expect(int(a) == first and word == self.lists[wordlist][(first - 1) * 88 + int(b) - 1],
-                            f"{label}: {a}-{b} {word}")
-                lines.append((int(b), f"{a}-{b} {word}"))
-            self.page_hash(f"{label} page {n}", page, [line for _, line in sorted(lines)], printed)
+            for b, word in entries:
+                self.expect(word == self.lists[wordlist][(first - 1) * 88 + int(b) - 1], f"{label}: {first:02d}-{b} {word}")
+                lines.append((int(b), f"{first:02d}-{b} {word}"))
+            self.page_hash(f"{label} page {first}", page, [line for _, line in sorted(lines)], printed)
             data.extend(sorted(lines))
+            order.append(first)
+        self.imposition(label, order, 88)
         return data
 
     def password_map(self, label, text, printed):
@@ -96,20 +120,20 @@ class Checker:
         self.page_hash(label, text, [f"{n:02d} {c} {k}" for n, k, c in cells], printed)
         return cells
 
-    def seed_reference(self, label, text, printed):
+    def blocks(self, label, text, printed):
         rows = BLOCK.findall(text)
         self.expect(len(rows) == 8, f"{label}: {len(rows)} blocks")
         for bits, block, start, end, first, last in rows:
             b = int(bits, 2)
             self.expect(int(block) == b and int(start) == 256 * b + 1 and int(end) == 256 * b + 256, f"{label}: block {b}")
             self.expect(first == self.bip39[256 * b] and last == self.bip39[256 * b + 255], f"{label}: words of block {b}")
-        self.page_hash(label, text, [" ".join(f"{r[0]} {r[1]} {r[2]}-{r[3]} {r[4]} {r[5]}".split()) for r in rows], printed)
+        self.page_hash(label, text, [f"{r[0]} {r[1]} {r[2]}-{r[3]} {r[4]} {r[5]}" for r in rows], printed)
         return rows
 
-    def tokens(self, label, text):
-        found = TOKEN.findall(text)
-        self.expect([int(n) for _, n in found] == list(range(1, 89)), f"{label}: tokens 01–88 once each")
-        self.expect(all((high != "") == (int(n) > 64) for high, n in found), f"{label}: tokens 65–88 must be marked")
+    def chips(self, label, text):
+        found = CHIP.findall(text)
+        self.expect([int(n) for _, n in found] == list(range(1, 89)), f"{label}: chips 01–88 once each")
+        self.expect(all((high != "") == (int(n) > 64) for high, n in found), f"{label}: chips 65–88 must be marked")
         return found
 
 
@@ -131,11 +155,11 @@ def check_language(checker, directory, manifest):
         elif name == "password-map.html":
             data[name] = checker.password_map(label, text, printed)
         elif name == "seed-reference.html":
-            data[name] = checker.seed_reference(label, text, printed)
-        elif name.startswith("token-"):
-            data[name] = checker.tokens(label, text)
+            data[name] = checker.blocks(label, text, printed)
+        elif name.startswith("chip-"):
+            data[name] = checker.chips(label, text)
         if entry is not None:
-            listed = [p["data_hash"] for p in entry["pages"] if "data_hash" in p]
+            listed = [h for p in entry["pages"] for h in p.get("data_hashes", [])]
             checker.expect(listed == printed, f"{label}: manifest page hashes differ from the printed ones")
         print(f"checked {label}")
     return data
