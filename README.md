@@ -17,9 +17,9 @@ checksum of a seed's last word can be done on paper; the small command-line tool
 The name refers to *drawing lots*: every draw from the bag yields a few bits of physical randomness. Chips in, bits out
 – they even rhyme a little.
 
-It started in 2024 with a bag of counting chips from a school-supply shop, number stickers and a printed booklet, as a way
-to make a Bitcoin seed without rolling dice a hundred times. LottaBits is the cleaned-up, tested and documented version
-of that experiment.
+It started in 2024 with a bag of counting chips from a school-supply shop, number stickers and a printed booklet: an
+experiment in making a Bitcoin seed from one bag of chips instead of dice. LottaBits is the cleaned-up, tested and
+documented version of that experiment.
 
 > **Status:** release candidate, not audited. Before you use it for anything of value, read [SECURITY.md](SECURITY.md)
 > and try the seed workflow with a test wallet first.

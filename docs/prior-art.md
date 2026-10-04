@@ -23,8 +23,10 @@ All sources were accessed in October 2026.
 - **Dice, coins and cards in wallets and tools**: hardware wallets and tools such as COLDCARD, SeedSigner and Krux accept
   dice rolls or coin flips as entropy, and SeedSigner and Krux calculate the final word from user-supplied bits.
   <https://github.com/SeedSigner/seedsigner>, <https://selfcustody.github.io/krux/>
-- **BitBox02 "Seed generation with dice"**: dice select the first 23 words from a lookup table; the BitBox02 shows the eight
-  valid final words. <https://bitbox.swiss/bitbox02/BitBox_Diceware_HowTo.pdf>
+- **BitBox02 "Seed generation with dice"**: for each of the first 23 words, one roll of five dice (values 1 to 4, rerolling
+  5 and 6) and a coin flip select a word from a lookup table of all 2048 words. After 23 words the BitBox02 shows the eight
+  valid final words, and the guide says to "pick one of the final recovery words at random".
+  <https://bitbox.swiss/bitbox02/BitBox_Diceware_HowTo.pdf>
 - **SeedPicker** by merland: paper slips like raffle tickets and a die select the first 23 words; an offline calculator
   computes the last word. <https://github.com/merland/seedpicker>
 - **SeedSticks**: wooden sticks engraved with BIP39 words, drawn blindly from a bag and thrown back; the final checksum word
