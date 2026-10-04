@@ -45,6 +45,10 @@ Paper first: the printables are a primary interface, not decorative assets.
   official vectors and the independent implementation `tools/crosscheck.py`.
 - Tests are hermetic: no network, no clock, no randomness.
 
+## Releases
+- Tag `vX.Y.Z` (with a matching `CHANGELOG.md` section) triggers `.github/workflows/release.yml`: gate, reproducible build
+  (`scripts/build-release.sh`), layout check, PDFs, build attestations, GitHub release. Never edit release assets by hand.
+
 ## Conventions
 - Chat with the human is German. All repository content is English, except the German locale data, the German word list
   and the generated German printables.

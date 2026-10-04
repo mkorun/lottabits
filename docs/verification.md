@@ -5,7 +5,8 @@ release tag `vX.Y.Z` and the binary name of your platform.
 
 ## 1. The download
 
-Every release lists `SHA256SUMS` and carries build attestations created by GitHub Actions.
+Every release lists `SHA256SUMS`, an SPDX SBOM (`lottabits-vX.Y.Z.spdx.json`) and carries build attestations created by
+GitHub Actions.
 
 ```sh
 sha256sum --check --ignore-missing SHA256SUMS          # macOS: shasum -a 256 --check --ignore-missing SHA256SUMS
@@ -21,9 +22,12 @@ Releases are reproducible: the same source and the Go version pinned in `mise.to
 ```sh
 git clone https://github.com/mkorun/lottabits && cd lottabits && git checkout vX.Y.Z
 mise install                                           # or install the Go version from mise.toml
-scripts/build-release.sh vX.Y.Z                        # writes dist/release/ and dist/release/SHA256SUMS
-diff dist/release/SHA256SUMS SHA256SUMS                # compare with the published checksums
+mise exec -- sh scripts/build-release.sh vX.Y.Z        # writes dist/release/ and dist/release/SHA256SUMS
+cd dist/release && sha256sum --check --ignore-missing /path/to/downloaded/SHA256SUMS
 ```
+
+All binaries, the printables archive (HTML) and the SBOM must match. Only the PDF archive is not reproducible (PDFs carry
+creation dates); its checksum is listed for download integrity only.
 
 ## 3. The program on your device
 
