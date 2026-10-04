@@ -38,6 +38,6 @@ head -n 7744 upstream/dys2p-de-7776-v1.txt | sha256sum                # lottabit
 
 ## Why the first 7744 entries
 
-Two draws of 88 tokens give `88 × 88 = 7744` coordinates. Taking a prefix in upstream order is the simplest rule that anyone can
+Two draws of 88 chips give `88 × 88 = 7744` coordinates. Taking a prefix in upstream order is the simplest rule that anyone can
 reproduce without judgement; no word was chosen or removed by preference. It drops the last 32 upstream entries
 (`yield` … `zoom` in English, `zweckgebunden` … `zypressen` in German).

@@ -16,8 +16,8 @@ func TestAlphabetIsFrozen(t *testing.T) {
 	if got := hex.EncodeToString(sum[:]); got != AlphabetSHA256 {
 		t.Fatalf("alphabet SHA-256 %s, specified %s", got, AlphabetSHA256)
 	}
-	if len(Alphabet) != Tokens {
-		t.Fatalf("alphabet has %d characters, want %d", len(Alphabet), Tokens)
+	if len(Alphabet) != Chips {
+		t.Fatalf("alphabet has %d characters, want %d", len(Alphabet), Chips)
 	}
 }
 
@@ -48,7 +48,7 @@ func TestClassesAreGroupedAsSpecified(t *testing.T) {
 }
 
 func TestEveryDrawSelectsItsCharacter(t *testing.T) {
-	all := make([]int, Tokens)
+	all := make([]int, Chips)
 	for i := range all {
 		all[i] = i + 1
 	}

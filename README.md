@@ -4,13 +4,13 @@
 >
 > **Seed. Password. Passphrase.**
 >
-> **One bag. Numbered tokens. No software-generated randomness.**
+> **One bag. Numbered chips. No software-generated randomness.**
 
 **Status: work in progress. Nothing here is usable yet. Do not use it for real secrets.**
 
 LottaBits is not a new cryptographic primitive. It explores a simpler human interface to physical randomness:
-numbered tokens drawn from one bag with replacement create BIP39 seeds, passwords and passphrases.
-The tokens create secrets. The computer only calculates.
+numbered chips drawn from one bag with replacement create BIP39 seeds, passwords and passphrases.
+The chips create secrets. The computer only calculates.
 
 The name refers to *drawing lots*: every draw from the bag yields a few bits of physical randomness.
 

@@ -1,4 +1,4 @@
-// Command lottabits turns physical token draws into BIP39 seeds, passwords and passphrases (see SPEC.md).
+// Command lottabits turns physical chip draws into BIP39 seeds, passwords and passphrases (see SPEC.md).
 // It never generates randomness itself.
 package main
 

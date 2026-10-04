@@ -22,16 +22,16 @@ linters:
   settings:
     depguard:
       rules:
-        # Core rule of the project: the tokens create secrets, the computer only calculates.
+        # Core rule of the project: the chips create secrets, the computer only calculates.
         # Applies to tests as well: tests are deterministic and hermetic.
         forbidden:
           files:
             - $all
           deny:
             - pkg: crypto/rand
-              desc: no software-generated randomness (the tokens create secrets)
+              desc: no software-generated randomness (the chips create secrets)
             - pkg: math/rand
-              desc: no software-generated randomness (the tokens create secrets)
+              desc: no software-generated randomness (the chips create secrets)
             - pkg: net
               desc: no network code
             - pkg: os/exec

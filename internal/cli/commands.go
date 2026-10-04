@@ -33,7 +33,7 @@ func (s *session) seed(args []string) int {
 	}); !ok {
 		return code
 	}
-	d, ok := s.readDraws(entry{prompt: "prompt_seed", highest: bip39.Tokens, size: 2, count: bip39.Draws / 2})
+	d, ok := s.readDraws(entry{prompt: "prompt_seed", highest: bip39.Chips, size: 2, count: bip39.Draws / 2})
 	if !ok {
 		return exitFailure
 	}
@@ -76,7 +76,7 @@ func (s *session) password(args []string) int {
 	if ok, code := s.parseFlags("password", args, nil); !ok {
 		return code
 	}
-	d, ok := s.readDraws(entry{prompt: "prompt_password", highest: password.Tokens, size: 1})
+	d, ok := s.readDraws(entry{prompt: "prompt_password", highest: password.Chips, size: 1})
 	if !ok {
 		return exitFailure
 	}
@@ -119,7 +119,7 @@ func (s *session) passphrase(args []string) int {
 		s.errorLine(s.msg.t("err_wordlist", name))
 		return exitUsage
 	}
-	d, ok := s.readDraws(entry{prompt: "prompt_passphrase", highest: passphrase.Tokens, size: 2})
+	d, ok := s.readDraws(entry{prompt: "prompt_passphrase", highest: passphrase.Chips, size: 2})
 	if !ok {
 		return exitFailure
 	}

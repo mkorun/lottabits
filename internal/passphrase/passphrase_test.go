@@ -14,8 +14,8 @@ import (
 // SPEC.md 6.1: the 7744 coordinates map one-to-one onto the indexes 0..7743.
 func TestIndexIsABijection(t *testing.T) {
 	var seen [Entries]bool
-	for a := 1; a <= Tokens; a++ {
-		for b := 1; b <= Tokens; b++ {
+	for a := 1; a <= Chips; a++ {
+		for b := 1; b <= Chips; b++ {
 			i := Index(a, b)
 			if i < 0 || i >= Entries || seen[i] {
 				t.Fatalf("Index(%d, %d) = %d is out of range or repeated", a, b, i)
@@ -37,8 +37,8 @@ func list(t *testing.T, name string) wordlists.List {
 func TestEveryCoordinateSelectsItsWord(t *testing.T) {
 	for _, name := range wordlists.PassphraseNames() {
 		l := list(t, name)
-		for a := 1; a <= Tokens; a++ {
-			for b := 1; b <= Tokens; b++ {
+		for a := 1; a <= Chips; a++ {
+			for b := 1; b <= Chips; b++ {
 				words, err := FromDraws([]int{a, b}, l)
 				if err != nil || words[0].Text != l.Word(Index(a, b)) {
 					t.Fatalf("%s %02d-%02d: %v, %v", name, a, b, words, err)

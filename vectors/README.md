@@ -1,6 +1,6 @@
 # Test vectors
 
-- `vectors.json`: LottaBits vectors (SPEC.md section 10). Draws are 1-based token numbers. Besides the hand-chosen vectors,
+- `vectors.json`: LottaBits vectors (SPEC.md section 10). Draws are 1-based chip numbers. Besides the hand-chosen vectors,
   `sha256-*` vectors use draws derived deterministically from SHA-256 of a fixed label (no randomness), and `block-*`
   vectors cover each of the eight word-24 blocks.
 - `trezor-vectors.json`: the official BIP39 vectors from

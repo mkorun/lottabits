@@ -1,4 +1,4 @@
-// Package draws parses and validates token draws typed by a person (SPEC.md sections 2 and 8).
+// Package draws parses and validates chip draws typed by a person (SPEC.md sections 2 and 8).
 package draws
 
 import (

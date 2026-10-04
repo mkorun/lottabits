@@ -14,7 +14,7 @@ const maxInput = 64 << 10
 // entry describes how draws are asked for in interactive mode.
 type entry struct {
 	prompt  string // message key, formatted with the entry number
-	highest int    // highest token number
+	highest int    // highest chip number
 	size    int    // draws per entry (1 or 2)
 	count   int    // number of entries; 0 means until an empty line
 }

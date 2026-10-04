@@ -12,7 +12,7 @@ import (
 // Parameters of lottabits-seed-v1.
 const (
 	ID           = "lottabits-seed-v1"
-	Tokens       = 64 // set 64
+	Chips        = 64 // set 64
 	Draws        = 46 // 23 pairs
 	Words        = 24
 	EntropyBytes = 32
@@ -20,7 +20,7 @@ const (
 	BlockSize    = 256
 
 	pairs       = Words - 1
-	groups      = Tokens / 2
+	groups      = Chips / 2
 	bitsPerWord = 11
 	extraBits   = 3
 	bitsPerByte = 8
@@ -49,7 +49,7 @@ type Seed struct {
 
 // PairIndex maps a valid pair (both draws in 1..64) to the 0-based BIP39 index and the extra bit (SPEC.md 4.2).
 func PairIndex(first, second int) (index, extra int) {
-	index = ((first-1)%groups)*Tokens + (second - 1)
+	index = ((first-1)%groups)*Chips + (second - 1)
 	if first > groups {
 		extra = 1
 	}
@@ -66,7 +66,7 @@ func FromDraws(d []int) (Seed, error) {
 	if len(d) != Draws {
 		return Seed{}, &draws.Error{Kind: draws.ExactCount, Want: Draws, Got: len(d)}
 	}
-	if err := draws.Validate(d, Tokens); err != nil {
+	if err := draws.Validate(d, Chips); err != nil {
 		return Seed{}, err
 	}
 	var seed Seed

@@ -19,8 +19,8 @@ const wordCount = 2048
 // SPEC.md 4.2: all 4096 pairs; each index exactly twice, once with extra bit 0 and once with 1.
 func TestPairIndexIsExhaustivelyUniform(t *testing.T) {
 	var seen [wordCount][2]int
-	for first := 1; first <= Tokens; first++ {
-		for second := 1; second <= Tokens; second++ {
+	for first := 1; first <= Chips; first++ {
+		for second := 1; second <= Chips; second++ {
 			index, extra := PairIndex(first, second)
 			if index < 0 || index >= wordCount || (extra != 0 && extra != 1) {
 				t.Fatalf("PairIndex(%d, %d) = %d, %d out of range", first, second, index, extra)
@@ -36,7 +36,7 @@ func TestPairIndexIsExhaustivelyUniform(t *testing.T) {
 }
 
 func TestExtraBitBelongsToFirstDraw(t *testing.T) {
-	for first := 1; first <= Tokens; first++ {
+	for first := 1; first <= Chips; first++ {
 		_, extra := PairIndex(first, 1)
 		want := 1
 		if first <= 32 {

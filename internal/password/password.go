@@ -9,8 +9,8 @@ import (
 
 // Parameters of lottabits-password-88-v1.
 const (
-	ID     = "lottabits-password-88-v1"
-	Tokens = 88
+	ID    = "lottabits-password-88-v1"
+	Chips = 88
 	// Alphabet in canonical order: digits, upper case, lower case, symbols (SPEC.md 5.1).
 	Alphabet       = "0123456789" + "ABCDEFGHJKLMNOPQRSTUVWXYZ" + "abcdefghijkmnopqrstuvwxyz" + "!\"#$%&()*+,-./:;<=>?@[]^_{}~"
 	AlphabetSHA256 = "a608b1e22ae80afcdbb5989a971da973d1632e38fca4ddcfbe57e919dab9badf"
@@ -51,7 +51,7 @@ func FromDraws(d []int) (Password, error) {
 	if len(d) == 0 {
 		return Password{}, &draws.Error{Kind: draws.MinimumCount, Want: 1, Got: 0}
 	}
-	if err := draws.Validate(d, Tokens); err != nil {
+	if err := draws.Validate(d, Chips); err != nil {
 		return Password{}, err
 	}
 	text := make([]byte, len(d))
@@ -64,4 +64,4 @@ func FromDraws(d []int) (Password, error) {
 }
 
 // Bits returns the entropy of a password with the given number of draws.
-func Bits(n int) float64 { return float64(n) * math.Log2(Tokens) }
+func Bits(n int) float64 { return float64(n) * math.Log2(Chips) }

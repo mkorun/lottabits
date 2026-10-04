@@ -13,8 +13,8 @@ import (
 // Parameters of lottabits-passphrase-7744-v1.
 const (
 	ID      = "lottabits-passphrase-7744-v1"
-	Tokens  = 88
-	Entries = Tokens * Tokens
+	Chips   = 88
+	Entries = Chips * Chips
 	// RecommendedMinimum is the recommended minimum number of words (SPEC.md 6.2).
 	RecommendedMinimum = 6
 )
@@ -29,7 +29,7 @@ type Word struct {
 func (w Word) Coordinate() string { return fmt.Sprintf("%02d-%02d", w.First, w.Second) }
 
 // Index returns the 0-based list index of a valid pair (SPEC.md 6.1).
-func Index(first, second int) int { return (first-1)*Tokens + (second - 1) }
+func Index(first, second int) int { return (first-1)*Chips + (second - 1) }
 
 // FromDraws maps each pair of draws in 1..88 to a word of the given 7744-entry list.
 func FromDraws(d []int, list wordlists.List) ([]Word, error) {
@@ -39,7 +39,7 @@ func FromDraws(d []int, list wordlists.List) ([]Word, error) {
 	if len(d) < 2 || len(d)%2 != 0 {
 		return nil, &draws.Error{Kind: draws.EvenCount, Want: 2, Got: len(d)}
 	}
-	if err := draws.Validate(d, Tokens); err != nil {
+	if err := draws.Validate(d, Chips); err != nil {
 		return nil, err
 	}
 	words := make([]Word, 0, len(d)/2)
