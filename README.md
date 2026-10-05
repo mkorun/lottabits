@@ -1,10 +1,18 @@
-# LottaBits
+<p align="center">
+  <img src="docs/assets/lotta.png" alt="Lotta, the LottaBits kangaroo, holding up chip 42, her pouch full of numbered chips" width="200">
+</p>
 
-> **LottaBits – physical randomness, one chip at a time.**
->
-> **Draw bits, make secrets: Passphrase, Password, Seed.**
->
-> **Paper first. Software only where mathematics requires it.**
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/logo-dark.png">
+    <img src="docs/assets/logo.png" alt="LottaBits – physical randomness, one chip at a time" width="460">
+  </picture>
+</h1>
+
+<p align="center">
+  <b>Draw bits, make secrets: Passphrase, Password, Seed.</b><br>
+  <b>Paper first. Software only where mathematics requires it.</b>
+</p>
 
 LottaBits is not a new cryptographic primitive. It explores a simpler human interface to physical randomness: numbered
 chips, drawn from one opaque bag with replacement, create a BIP39 seed, a password or a passphrase, with no
@@ -12,7 +20,7 @@ software-generated randomness. Everything except the checksum of a seed's last w
 command-line tool only calculates.
 
 The name refers to *drawing lots*: every draw from the bag yields a few bits of physical randomness. Chips in, bits out
-– they even rhyme a little.
+– they even rhyme a little. Lotta, the mascot, is a kangaroo: her pouch is the bag.
 
 It started in 2024 with a bag of counting chips from a school-supply shop, number stickers and a printed booklet: an
 experiment in making a Bitcoin seed from one bag of chips instead of dice. LottaBits is the cleaned-up, tested and
