@@ -2,7 +2,7 @@
 
 | File | What |
 |---|---|
-| `lotta.png` | Lotta, the LottaBits mascot: a kangaroo whose pouch is the bag the chips are drawn from (1024 × 1536, transparent) |
+| `lotta.png` | Lotta, the LottaBits mascot: a kangaroo whose pouch is the bag the chips are drawn from (972 × 1062, transparent) |
 | `logo.png` | wordmark with claim, for light backgrounds (2172 × 724, transparent) |
 | `logo-dark.png` | the same wordmark for dark backgrounds: the navy parts recoloured to `#F7F4EE`, nothing else changed |
 | `social-preview.png` | 1280 × 640 image for link previews (GitHub repository settings → Social preview) |

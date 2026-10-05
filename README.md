@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/lotta.png" alt="Lotta, the LottaBits kangaroo, holding up chip 42, her pouch full of numbered chips" width="140">
+  <img src="docs/assets/lotta.png" alt="Lotta, the LottaBits kangaroo, holding up chip 42, her pouch full of numbered chips" width="160">
 </p>
 
 <h1 align="center">
