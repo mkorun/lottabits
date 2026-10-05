@@ -2,9 +2,7 @@
 
 > **LottaBits – physical randomness, one chip at a time.**
 >
-> **Seed. Password. Passphrase.**
->
-> **Draw bits. Make secrets.**
+> **Draw bits, make secrets: Passphrase, Password, Seed.**
 >
 > **Paper first. Software only where mathematics requires it.**
 
