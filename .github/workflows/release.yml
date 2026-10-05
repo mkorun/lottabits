@@ -39,6 +39,7 @@ jobs:
           python3 tools/check_layout.py "$RUNNER_TEMP/layout"
       - name: PDFs of the printables (convenience, not reproducible)
         run: |
+          sudo apt-get update -q
           sudo apt-get install -y --no-install-recommends poppler-utils
           go run ./cmd/printables -version "$GITHUB_REF_NAME" -out "$RUNNER_TEMP/printables"
           python3 tools/render_pdfs.py "$RUNNER_TEMP/printables" "$RUNNER_TEMP/pdf-$GITHUB_REF_NAME"
