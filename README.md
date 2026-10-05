@@ -1,6 +1,6 @@
 # LottaBits
 
-> **LottaBits – physical randomness without dice.**
+> **LottaBits – physical randomness, one chip at a time.**
 >
 > **Seed. Password. Passphrase.**
 >

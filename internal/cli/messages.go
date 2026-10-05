@@ -9,7 +9,7 @@ import (
 // those are passed as arguments. TestCatalogsMatch checks that both languages have the same keys and format verbs.
 var catalogs = map[string]map[string]string{
 	"en": { //nolint:gosec // G101: user-interface text whose keys mention "password", no credentials
-		"usage": `LottaBits – physical randomness without dice.
+		"usage": `LottaBits – physical randomness, one chip at a time.
 
 Usage:
   lottabits seed       [--details]          46 draws (01–64) -> 24 BIP39 words
@@ -68,7 +68,7 @@ Draws are read from standard input, never from arguments. On a terminal you are 
 		"selftest_failed":       "SELF-TEST FAILED: %d of %d checks. Do not use this binary.",
 	},
 	"de": { //nolint:gosec // G101: user-interface text whose keys mention "password", no credentials
-		"usage": `LottaBits – physischer Zufall ohne Würfel.
+		"usage": `LottaBits – physischer Zufall, Chip für Chip.
 
 Aufruf:
   lottabits seed       [--details]          46 Ziehungen (01–64) -> 24 BIP39-Wörter
