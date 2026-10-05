@@ -9,13 +9,13 @@ run = "sh scripts/check.sh"
 
 [tasks.printables]
 description = "Generate the printables (HTML) into dist/printables"
-run = "go run ./cmd/printables -out dist/printables"
+run = "rm -rf dist/printables && go run ./cmd/printables -out dist/printables"
 
 [tasks.pdf]
 description = "Render dist/printables to PDF with headless Chrome and check page counts"
 depends = ["printables"]
-run = "python3 tools/render_pdfs.py dist/printables dist/pdf"
+run = "rm -rf dist/pdf && python3 tools/render_pdfs.py dist/printables dist/pdf"
 
 [tasks.layout]
 description = "Check the printables for overflowing boxes in headless Chrome"
-run = "go run ./cmd/printables -layout-check -out dist/layout-check && python3 tools/check_layout.py dist/layout-check"
+run = "rm -rf dist/layout-check && go run ./cmd/printables -layout-check -out dist/layout-check && python3 tools/check_layout.py dist/layout-check"
