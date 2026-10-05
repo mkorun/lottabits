@@ -8,7 +8,8 @@
 | `social-preview.png` | 1280 × 640 image for link previews (GitHub repository settings → Social preview) |
 
 `lotta.png` and `logo.png` were made by the project author with an AI image generator (ChatGPT, OpenAI) and selected and
-corrected over several rounds. `logo-dark.png` is derived from `logo.png` pixel by pixel; `social-preview.png` combines both,
+corrected over several rounds; the orange of "Bits" in `logo.png` was then lightened from `#BE4526` to `#E2622A` by
+scaling the colour of those pixels. `logo-dark.png` is derived from `logo.png` pixel by pixel; `social-preview.png` combines both,
 with the second claim set in Atkinson Hyperlegible Next (`printables/fonts/`, SIL OFL 1.1).
 
 License: CC BY 4.0, like the rest of the documentation ([`LICENSE-DOCS`](../../LICENSE-DOCS)).
