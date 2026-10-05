@@ -13,7 +13,8 @@ sha256sum --check --ignore-missing SHA256SUMS          # macOS: shasum -a 256 --
 gh attestation verify lottabits-vX.Y.Z-linux-amd64 --repo mkorun/lottabits
 ```
 
-The attestation shows that the file was built by this repository's release workflow from the tagged commit.
+The attestation shows that the file was built by this repository's release workflow from the tagged commit. The
+`attestation` command needs a recent GitHub CLI; older versions such as 2.46 do not have it.
 
 ## 2. Rebuild it yourself
 
