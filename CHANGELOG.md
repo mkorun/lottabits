@@ -3,6 +3,20 @@
 All notable changes are listed here. Versions follow [semantic versioning](https://semver.org/). Algorithm and data
 identifiers (`lottabits-seed-v1` and so on) are versioned separately and never change their meaning.
 
+## [Unreleased]
+
+### Changed
+- New claim "Physical randomness, one chip at a time." (German: "Physischer Zufall, Chip für Chip.") in the README, in the
+  help text of `lottabits` and in the repository description. The README header now reads "Draw bits, make secrets:
+  Passphrase, Password, Seed."
+
+### Added
+- Lotta, the LottaBits mascot, and the wordmark in the README header (with a variant for dark mode) and as the repository's
+  social preview image; provenance and license in `docs/assets/README.md`. The printables do not use the mascot.
+
+### Documentation
+- `docs/verification.md`: verifying build attestations needs a recent GitHub CLI.
+
 ## [1.0.0-rc.1]
 
 First public release candidate.
@@ -27,4 +41,5 @@ First public release candidate.
 - Exhaustive mapping tests, official BIP39 vectors, an independent Python implementation compared with the compiled binary,
   independent checks of the generated printables, reproducible builds with SBOM and build attestations.
 
+[Unreleased]: https://github.com/mkorun/lottabits/compare/v1.0.0-rc.1...HEAD
 [1.0.0-rc.1]: https://github.com/mkorun/lottabits/releases/tag/v1.0.0-rc.1
